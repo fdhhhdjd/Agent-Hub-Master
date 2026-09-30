@@ -127,11 +127,18 @@ input[type=search].on{border-color:var(--accent);box-shadow:0 0 0 3px var(--acce
 
 /* SDLC section */
 .sdlc{margin:4px 0 26px}
-.sdlc-head{margin-bottom:14px}
-.sdlc-head h2{margin:0 0 3px;font-size:clamp(17px,1.2vw+14px,20px);font-weight:800;display:flex;align-items:center;gap:9px;letter-spacing:-.01em}
-.sdlc-head h2 .ttl{background:linear-gradient(100deg,var(--accent),#e11d48,#7c3aed,var(--accent));background-size:280% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:shine 6s linear infinite}
-.sdlc-head h2 .i{width:20px;height:20px;color:var(--accent);flex:none}
-.sdlc-head p{margin:0;font-size:13px;color:var(--muted)}
+.fold{margin-bottom:14px}
+.fold-h{width:100%;display:flex;align-items:center;gap:12px;padding:4px 2px 12px;border:0;background:none;text-align:left;cursor:pointer}
+.fold-htx{flex:1;min-inline-size:0;display:flex;flex-direction:column;gap:2px}
+.fold-htx b{font-size:clamp(16px,1.1vw+13px,20px);font-weight:800;display:flex;align-items:center;gap:9px;letter-spacing:-.01em}
+.fold-htx b .i{width:20px;height:20px;color:var(--accent);flex:none}
+.fold-htx b .ttl{background:linear-gradient(100deg,var(--accent),#e11d48,#7c3aed,var(--accent));background-size:280% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:shine 6s linear infinite}
+.fold-htx small{font-size:12.5px;color:var(--muted);font-weight:500}
+.fold-chev{width:20px;height:20px;color:var(--muted);transition:transform .3s;flex:none}
+.fold.folded .fold-chev{transform:rotate(-90deg)}
+.fold-b{max-height:1700px;overflow:hidden;transition:max-height .42s cubic-bezier(.4,0,.2,1),opacity .3s}
+.fold.folded .fold-b{max-height:0;opacity:0}
+.fold-h:hover .fold-chev{color:var(--accent)}
 .stage{position:relative;min-inline-size:0;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:13px;display:flex;flex-direction:column;gap:6px;text-align:left;cursor:pointer;
   opacity:0;transform:translateY(24px) scale(.95);transition:opacity .5s ease,transform .55s cubic-bezier(.34,1.56,.64,1),border-color .16s,box-shadow .16s;transition-delay:calc(var(--i)*90ms)}
 .sdlc.in .stage{opacity:1;transform:none}
@@ -291,8 +298,8 @@ code,.mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:13px}
     </div>
   </header>
 
-  <section class="sdlc" id="sdlc" aria-label="Quy trình phát triển phần mềm"></section>
-  <section class="guide" id="guide" aria-label="Giới thiệu"></section>
+  <section class="fold sdlc" id="sdlc" aria-label="Quy trình phát triển phần mềm"></section>
+  <section class="fold gwrap" id="gwrap" aria-label="Các loại nội dung"></section>
 
   <div class="toolbar">
     <div class="pills" id="colls" role="group" aria-label="Bộ"></div>
@@ -380,6 +387,8 @@ code,.mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:13px}
     sdlcLeg1:{vi:"bàn giao artifact cho giai đoạn kế", en:"hand the artifact to the next stage"},
     sdlcLeg2:{vi:"vòng lặp phản hồi — Maintain quay lại Plan", en:"feedback loop — Maintain returns to Plan"},
     sdlcLeg3:{vi:"giai đoạn tự chạy, không cần người", en:"stage runs itself, no human in the loop"},
+    typesTitle:{vi:"Các loại nội dung", en:"Content types"},
+    typesSub:{vi:"5 loại: Agent · Command · Skill · Rule · Reference (+ điểm bắt đầu).", en:"5 types: Agent · Command · Skill · Rule · Reference (+ entry point)."},
     codeNote:{vi:"— đoạn code, xem đầy đủ trên GitHub —", en:"— code block, see full source on GitHub —"},
     copyCmd: {vi:"Copy lệnh", en:"Copy command"},
     okOpen:  {vi:"Đang mở GitHub…", en:"Opening GitHub…"},    okL:     {vi:"Đã copy link", en:"Link copied"},
@@ -491,24 +500,39 @@ code,.mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:13px}
         <span class="st-art">${esc(st.art)}</span>
         <span class="st-desc">${lang==="vi"?st.dvi:st.den}</span>${arrow}</button>`;
     }).join("");
-    $("#sdlc").innerHTML = `
-      <div class="sdlc-head"><h2>${ic("git-branch-plus")} <span class="ttl">${tr("sdlcTitle")}</span></h2><p>${tr("sdlcSub")}</p></div>
+    $("#sdlc").innerHTML = foldHeader("git-branch-plus", tr("sdlcTitle"), tr("sdlcSub"), true) + `
+      <div class="fold-b">
       <div class="sdlc-flow">${cards}</div>
       <div class="sdlc-loop"><span class="loop-track"></span><span class="loop-arrow">${ic("arrow-up")}</span><span class="loop-label">${ic("refresh-cw")} ${tr("sdlcLoop")}</span></div>
       <div class="sdlc-legend">
         <span><span class="lg-a"></span> ${tr("sdlcLeg1")}</span>
         <span><span class="lg-b"></span> ${tr("sdlcLeg2")}</span>
         <span><span class="lg-c"></span> ${tr("sdlcLeg3")}</span>
-      </div>`;
+      </div></div>`;
     $("#sdlc").querySelectorAll("[data-agent]").forEach(b=>b.onclick=()=>open(b.dataset.agent));
+    applyFold($("#sdlc"), "sdlc");
     if (sdlcSeen) $("#sdlc").classList.add("in");
   }
   let sdlcSeen=false;
+  const mobileNow = () => matchMedia("(max-width:760px)").matches;
+  function foldHeader(icon, title, sub, shine){
+    return `<button class="fold-h" aria-expanded="true"><span class="fold-htx"><b>${ic(icon)} <span class="${shine?"ttl":""}">${title}</span></b><small>${sub}</small></span><i class="fold-chev" data-lucide="chevron-down" aria-hidden="true"></i></button>`;
+  }
+  function applyFold(sec, key){
+    let open;
+    try { const v=localStorage.getItem("hub.fold."+key); open = v===null ? !mobileNow() : v==="1"; } catch { open=!mobileNow(); }
+    sec.classList.toggle("folded", !open);
+    const h=sec.querySelector(".fold-h"); h.setAttribute("aria-expanded", String(open));
+    h.onclick = () => { const nowOpen = sec.classList.contains("folded"); sec.classList.toggle("folded", !nowOpen);
+      h.setAttribute("aria-expanded", String(nowOpen)); try{ localStorage.setItem("hub.fold."+key, nowOpen?"1":"0"); }catch{} };
+  }
   function buildGuide(){
-    $("#guide").innerHTML = Object.entries(TYPES).filter(([k])=>k!=="all").map(([k,t],idx) =>
+    const cards = Object.entries(TYPES).filter(([k])=>k!=="all").map(([k,t],idx) =>
       `<div class="g" style="--i:${idx}"><div class="ic" style="background:color-mix(in srgb,${t.color} 15%,transparent);color:${t.color}">${ic(t.icon)}</div>
        <div class="g-tx"><b>${t[lang]} · ${t["w"+lang[0]]}</b><span>${t["h"+lang[0]]}</span></div></div>`).join("");
-    requestAnimationFrame(()=>$("#guide").classList.add("in"));
+    $("#gwrap").innerHTML = foldHeader("layout-grid", tr("typesTitle"), tr("typesSub")) +
+      `<div class="fold-b"><div class="guide in">${cards}</div></div>`;
+    applyFold($("#gwrap"), "guide");
   }
   function buildColls(){
     const c = items.reduce((a,i)=>(a[i.source]=(a[i.source]||0)+1,a),{});
