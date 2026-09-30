@@ -1,0 +1,314 @@
+{
+  "master-start-CLAUDE.md": {
+    "vi": "File Claude đọc đầu tiên. Nó tự nạp các luật, kỹ năng và tài liệu quan trọng cho mọi phiên làm việc.",
+    "en": "The first file Claude reads. It auto-loads the key rules, skills and docs for every session."
+  },
+  "master-agent-project-manager": {
+    "vi": "Đóng vai Quản lý dự án: chia mục tiêu thành việc nhỏ, viết yêu cầu, sắp thứ tự ưu tiên và kế hoạch sprint.",
+    "en": "Plays a Project Manager: breaks goals into tasks, writes requirements, prioritises and plans sprints."
+  },
+  "master-agent-ui-ux-designer": {
+    "vi": "Đóng vai Thiết kế UI/UX: vẽ luồng người dùng, giao diện, và đảm bảo dễ dùng, đẹp, dễ tiếp cận.",
+    "en": "Plays a UI/UX Designer: user flows, screens, and making things usable, beautiful and accessible."
+  },
+  "master-agent-software-engineer": {
+    "vi": "Đóng vai Lập trình viên: biến bản mô tả thành code gọn, chạy được, đúng chuẩn.",
+    "en": "Plays a Software Engineer: turns a spec into clean, working, production-shaped code."
+  },
+  "master-agent-qa-test-engineer": {
+    "vi": "Đóng vai Kiểm thử (QA): viết và chạy test để chứng minh sản phẩm làm đúng, bắt lỗi còn sót.",
+    "en": "Plays a QA Engineer: writes and runs tests to prove the build works and catch what's broken."
+  },
+  "master-agent-devops-engineer": {
+    "vi": "Đóng vai DevOps: đưa code lên máy chủ an toàn theo phiên bản, luôn có kiểm tra sức khỏe và cách quay lui.",
+    "en": "Plays a DevOps engineer: ships code safely by version, always with a health check and a rollback."
+  },
+  "master-agent-sre-ops-engineer": {
+    "vi": "Đóng vai SRE/Vận hành: theo dõi hệ thống, khi hỏng thì tìm nguyên nhân và khôi phục.",
+    "en": "Plays an SRE: watches the system, and when it breaks, diagnoses and recovers it."
+  },
+  "master-command-build": {
+    "vi": "Gõ /build để Claude hỏi vài câu rồi tự viết ra bản kế hoạch, thiết kế và hướng dẫn để bắt tay làm tính năng.",
+    "en": "Type /build; Claude asks a few questions then produces the plan, design and build guide for a feature."
+  },
+  "master-command-spec": {
+    "vi": "Gõ /spec để viết bản mô tả chi tiết (yêu cầu, sơ đồ, dữ liệu, API) TRƯỚC khi code.",
+    "en": "Type /spec to write a detailed spec (requirements, diagrams, data, API) BEFORE coding."
+  },
+  "master-command-system-design": {
+    "vi": "Gõ /system-design để giải bài toán thiết kế hệ thống theo 4 bước và ước lượng tải.",
+    "en": "Type /system-design to solve a system-design problem in 4 steps with load estimates."
+  },
+  "master-command-achitecture-plan": {
+    "vi": "Gõ /architecture-plan để Claude đọc hết code và viết một tài liệu kiến trúc dự án đầy đủ.",
+    "en": "Type /architecture-plan; Claude reads the whole codebase and writes a full architecture doc."
+  },
+  "master-command-oss-blueprint": {
+    "vi": "Gõ /oss-blueprint để mổ xẻ một repo mã nguồn mở: nó làm gì, cái gì nên lấy/bỏ, cách dựng lại.",
+    "en": "Type /oss-blueprint to dissect an open-source repo: what it does, what to keep, how to rebuild it."
+  },
+  "master-command-cicd": {
+    "vi": "Gõ /cicd để dựng pipeline CI/CD chuẩn: build, test, deploy VPS, kiểm tra sức khỏe, tự quay lui khi lỗi.",
+    "en": "Type /cicd to set up a standard CI/CD pipeline: build, test, deploy, health check, auto-rollback."
+  },
+  "master-command-cicd-ai": {
+    "vi": "Gõ /cicd (bản 2 làn): nhánh dev deploy tay, nhánh prod chỉ deploy qua pipeline — AI không tự đẩy prod.",
+    "en": "Type /cicd (two-lane): dev deployed by hand, prod only via pipeline — AI never pushes prod."
+  },
+  "master-command-cicd-packages-blueprint": {
+    "vi": "Mẫu tái dùng: build image lên GitHub Packages rồi tự SSH deploy VPS.",
+    "en": "Reusable blueprint: build images to GitHub Packages then auto-deploy to a VPS over SSH."
+  },
+  "master-command-harden": {
+    "vi": "Gõ /harden để gia cố máy chủ trước khi mở cho người dùng: khoá SSH, tường lửa, chặn dò mật khẩu.",
+    "en": "Type /harden to lock down a server before launch: SSH keys, firewall, brute-force protection."
+  },
+  "master-command-ssh-vps": {
+    "vi": "Gõ /ssh-vps để cài SSH key + GitHub + VPS dev/prod và tạo script deploy.",
+    "en": "Type /ssh-vps to set up SSH keys + GitHub + dev/prod VPS and deploy scripts."
+  },
+  "master-command-repo-scan": {
+    "vi": "Gõ /repo-scan để soi một repo lạ vừa tải về (mã độc, mật khẩu lộ, lỗ hổng) TRƯỚC khi chạy nó.",
+    "en": "Type /repo-scan to audit a freshly-cloned repo (malware, leaked secrets, CVEs) before running it."
+  },
+  "master-command-security-review-pro": {
+    "vi": "Gõ /security-review-pro để rà lỗ hổng bảo mật trong code của bạn, lọc báo động giả, chỉ báo lỗi thật.",
+    "en": "Type /security-review-pro to find real security bugs in your code and filter out false alarms."
+  },
+  "master-command-pentest-suite": {
+    "vi": "Quy trình kiểm thử xâm nhập từ đầu đến cuối cho mục tiêu đã được phép, kết thúc bằng báo cáo.",
+    "en": "End-to-end penetration-testing workflow for an authorised target, ending in a full report."
+  },
+  "master-command-monitoring": {
+    "vi": "Gõ /monitoring để lắp bộ theo dõi Prometheus + Grafana + cảnh báo cho dự án.",
+    "en": "Type /monitoring to add a Prometheus + Grafana + alerting stack to a project."
+  },
+  "master-command-observability": {
+    "vi": "Gõ /observability để thiết kế đo lường: chỉ số, log, trace và mục tiêu chất lượng (SLO).",
+    "en": "Type /observability to design metrics, logs, traces and service-level objectives (SLO)."
+  },
+  "master-command-logging": {
+    "vi": "Gõ /logging để chuẩn hoá cách ghi log (JSON có cấu trúc, dễ tìm, dễ truy vết).",
+    "en": "Type /logging to standardise structured, searchable, traceable logging."
+  },
+  "master-command-logging-observability": {
+    "vi": "Bản ghi log nối vào cả hệ tracing/monitoring — dùng cho hệ thống lớn.",
+    "en": "Logging wired into tracing/monitoring — for larger systems."
+  },
+  "master-command-db-index": {
+    "vi": "Gõ /db-index để thiết kế index cho database khi truy vấn chậm, và dọn index thừa.",
+    "en": "Type /db-index to design database indexes when queries are slow, and prune unused ones."
+  },
+  "master-command-device-fingerprint": {
+    "vi": "Gõ /device-fingerprint để nhận diện thiết bị, chống một người tạo nhiều tài khoản / vượt giới hạn.",
+    "en": "Type /device-fingerprint to identify devices and block multi-account abuse and limit bypass."
+  },
+  "master-command-rag": {
+    "vi": "Gõ /rag để xây hoặc tăng chất lượng hệ thống hỏi-đáp trên tài liệu (RAG) theo 5 giai đoạn.",
+    "en": "Type /rag to build or improve a document question-answering (RAG) system in 5 stages."
+  },
+  "master-command-ai-eval-pipeline": {
+    "vi": "Gõ /ai-eval-pipeline để tự động chấm điểm chất lượng ứng dụng AI mỗi lần sửa, chặn khi tệ đi.",
+    "en": "Type /ai-eval-pipeline to auto-grade an AI app's quality on every change and block regressions."
+  },
+  "master-command-frontend": {
+    "vi": "Gõ /frontend để rà và sửa toàn bộ frontend theo best-practice rồi xuất báo cáo.",
+    "en": "Type /frontend to audit and fix the whole frontend against best practices and report back."
+  },
+  "master-command-responsive": {
+    "vi": "Gõ /responsive để làm giao diện chạy đẹp mọi kích thước màn hình, sửa lỗi vỡ layout, tràn ngang.",
+    "en": "Type /responsive to make the UI work on every screen size and fix broken/overflowing layouts."
+  },
+  "master-command-unit-tests": {
+    "vi": "Gõ /unit-tests để viết unit test cho một hàm/lớp/module ở bất kỳ ngôn ngữ nào.",
+    "en": "Type /unit-tests to write unit tests for a function/class/module in any language."
+  },
+  "master-command-seo": {
+    "vi": "Gõ /seo để đưa website lên Google: landing page, sitemap, robots.txt, thẻ meta, Search Console.",
+    "en": "Type /seo to get a site indexed by Google: landing page, sitemap, robots.txt, meta tags, Search Console."
+  },
+  "master-command-seo-pro": {
+    "vi": "Bộ SEO toàn diện cho mọi website: rà lỗi, viết nội dung, và tối ưu để AI (ChatGPT, Perplexity) trích dẫn.",
+    "en": "A full SEO engine for any site: audit, content, and optimising to be cited by AI search."
+  },
+  "master-command-seo-spec": {
+    "vi": "Bản tóm tắt ngắn gọn 3 việc SEO: kiểm lỗi, sửa có bằng chứng, tối ưu cho AI.",
+    "en": "A short summary of the 3 SEO jobs: audit, evidence-based fixes, AI-search optimisation."
+  },
+  "master-command-CDC-backup": {
+    "vi": "Gõ /cdc-backup để thiết kế sao lưu liên tục: mỗi thay đổi dữ liệu được đẩy qua hàng đợi và lưu lại.",
+    "en": "Type /cdc-backup to design continuous backup: every data change is streamed through a queue and stored."
+  },
+  "master-command-google-drive-backup": {
+    "vi": "Nạp tài liệu về tính năng sao lưu lên Google Drive (hướng dẫn cài + bản thiết kế tái dùng).",
+    "en": "Loads the Google-Drive backup docs (setup guide + reusable blueprint)."
+  },
+  "master-command-animation-animation-vocabulary": {
+    "vi": "Tra tên hiệu ứng chuyển động web từ mô tả mơ hồ (ví dụ: hiệu ứng nảy khi mở popup).",
+    "en": "Looks up the name of a web motion effect from a vague description."
+  },
+  "master-command-animation-apple-design": {
+    "vi": "Cách thiết kế giao diện và chuyển động mượt theo phong cách Apple, áp cho web.",
+    "en": "Apple's approach to interface design and fluid motion, applied to the web."
+  },
+  "master-command-animation-emil-design-eng": {
+    "vi": "Triết lý làm giao diện tinh tế của Emil Kowalski: chi tiết nhỏ khiến phần mềm cảm giác chất.",
+    "en": "Emil Kowalski's philosophy on UI polish and the small details that make software feel great."
+  },
+  "master-command-animation-improve-animations": {
+    "vi": "Rà toàn bộ code chuyển động của dự án và lập kế hoạch cải thiện theo thứ tự ưu tiên.",
+    "en": "Surveys a project's animation code and produces a prioritised improvement plan."
+  },
+  "master-command-animation-review-animations": {
+    "vi": "Chấm chất lượng code chuyển động theo chuẩn cao về độ tinh tế.",
+    "en": "Reviews animation code against a high craft bar."
+  },
+  "master-skill-diagram-design": {
+    "vi": "Tạo sơ đồ đẹp, gọn (kiến trúc, luồng, tuần tự…) dưới dạng 1 file HTML nhúng được vào bài viết/slide.",
+    "en": "Creates clean diagrams (architecture, flow, sequence…) as one embeddable HTML file."
+  },
+  "master-skill-payment": {
+    "vi": "Tích hợp thanh toán VietQR/SePay: tạo mã QR, nhận thông báo chuyển khoản, sổ giao dịch cho admin.",
+    "en": "Integrates VietQR/SePay payments: QR codes, bank webhooks, and an admin money ledger."
+  },
+  "master-skill-rabbitmq": {
+    "vi": "Thay xử lý ngầm tạm bợ bằng hàng đợi RabbitMQ có thử lại + hàng chết, tự lui về cách cũ nếu queue hỏng.",
+    "en": "Replaces flaky background jobs with a RabbitMQ queue with retries + dead-letter, with graceful fallback."
+  },
+  "master-skill-monitoring": {
+    "vi": "Lắp bộ theo dõi Prometheus + Grafana cho dự án Go (bản skill tự kích hoạt).",
+    "en": "Adds a Prometheus + Grafana monitoring stack to a Go project."
+  },
+  "master-skill-ha": {
+    "vi": "Dựng hệ dự phòng 2 máy chủ tự chuyển đổi khi hỏng (failover), điều phối bằng Jenkins.",
+    "en": "Sets up a 2-server active/standby failover setup, orchestrated by Jenkins."
+  },
+  "master-skill-jenkins": {
+    "vi": "Dùng Jenkins làm trung tâm điều phối: CI/CD, việc định kỳ tự sửa lỗi, và nguồn dữ liệu cho dashboard.",
+    "en": "Uses Jenkins as an orchestration hub: CI/CD, self-healing cron jobs, and a dashboard data source."
+  },
+  "master-skill-prod-incident": {
+    "vi": "Xử lý sự cố production: chẩn đoán theo 4 mẫu lỗi hay gặp rồi khắc phục an toàn.",
+    "en": "Handles production incidents: diagnose against 4 common failure patterns, then fix safely."
+  },
+  "master-skill-device-fingerprint": {
+    "vi": "Thêm nhận diện thiết bị cho dự án Go + React để chống lạm dụng (bản skill tự kích hoạt).",
+    "en": "Adds device fingerprinting to a Go + React project to curb abuse."
+  },
+  "master-skill-obsidian": {
+    "vi": "Tổ chức ghi chú Obsidian thông minh: 10 nguyên tắc để dùng được note thay vì chỉ tích trữ.",
+    "en": "Organises Obsidian notes smartly: 10 principles for actually using notes, not just hoarding them."
+  },
+  "master-skill-progressive-disclosure": {
+    "vi": "Cách thiết kế skill/tài liệu theo tầng để Claude chỉ nạp đúng phần cần, giữ ngữ cảnh gọn.",
+    "en": "How to layer skills/docs so Claude loads only what it needs and keeps context lean."
+  },
+  "master-skill-prompt-injection-defense": {
+    "vi": "Nhận diện và chống chèn lệnh độc (prompt injection) trong nội dung web, file, tool mà AI đọc.",
+    "en": "Detects and defends against prompt injection in web, files and tool output the AI reads."
+  },
+  "master-skill-plans": {
+    "vi": "Luật: khi làm việc liên quan tới một kế hoạch có sẵn, giữ file kế hoạch khớp với thực tế.",
+    "en": "Policy: when work relates to an existing plan, keep the plan file in sync with reality."
+  },
+  "master-skill-policies": {
+    "vi": "Luật bắt buộc: không xoá/sửa/ghi đè file khi chưa có yêu cầu rõ ràng, cụ thể.",
+    "en": "Mandatory policy: never delete/edit/overwrite files without an explicit, specific request."
+  },
+  "master-rule-token": {
+    "vi": "Luật: trả lời gọn, đọc file đúng phạm vi, không lan man — tiết kiệm ngữ cảnh.",
+    "en": "Rule: concise answers, scoped file reads, no rambling — save context."
+  },
+  "master-rule-multi-agent": {
+    "vi": "Luật: việc nhỏ 1 agent; việc lớn chia nhỏ chạy song song, tối đa 5 cùng lúc.",
+    "en": "Rule: small task = 1 agent; big task = split and fan out, max 5 in parallel."
+  },
+  "master-rule-naming-conventions": {
+    "vi": "Chuẩn đặt tên: cache key, bảng database, hàng đợi, sự kiện, biến môi trường, route.",
+    "en": "Naming standards: cache keys, DB tables, queues, events, env vars, routes."
+  },
+  "master-rule-folder-structure": {
+    "vi": "Luật: theo đúng cấu trúc thư mục chuẩn của từng ngôn ngữ/framework khi dựng dự án.",
+    "en": "Rule: follow each language/framework's canonical folder layout when building a project."
+  },
+  "master-rule-docs-placement": {
+    "vi": "Luật: mọi file .md tạo mới phải đặt trong thư mục docs/ đúng nhóm, có index.",
+    "en": "Rule: every new .md goes into the right docs/ group with an index."
+  },
+  "master-rule-skill-authoring": {
+    "vi": "Luật: cách viết skill/command/reference đúng chuẩn để Claude chọn và nạp đúng lúc.",
+    "en": "Rule: how to write skills/commands/references so Claude picks and loads them correctly."
+  },
+  "master-reference-auth-flow": {
+    "vi": "Tài liệu tra cứu: cách làm đăng nhập an toàn với JWT + refresh token + chặn thu hồi bằng Redis.",
+    "en": "Reference: how to build secure login with JWT + refresh tokens + Redis revocation."
+  },
+  "master-reference-RBAC": {
+    "vi": "Tài liệu tra cứu: phân quyền theo vai trò (ai được làm gì) — thiết kế bảng, kiểm tra, audit.",
+    "en": "Reference: role-based access control (who can do what) — schema, checks, audit."
+  },
+  "master-reference-docker": {
+    "vi": "Tài liệu tra cứu: quy trình Docker từ dev tới prod (multi-stage, compose, volume, bảo mật).",
+    "en": "Reference: Docker workflow from dev to prod (multi-stage, compose, volumes, security)."
+  },
+  "master-reference-deploy-workflow": {
+    "vi": "Tài liệu tra cứu: quy trình deploy Local → Dev → Prod theo tag, có cổng duyệt và rollback.",
+    "en": "Reference: Local → Dev → Prod deploy workflow by tag, with an approval gate and rollback."
+  },
+  "master-reference-multi-app-infra": {
+    "vi": "Tài liệu tra cứu: chạy nhiều ứng dụng trên hạ tầng chung mà không đụng cổng/DB của nhau.",
+    "en": "Reference: run multiple apps on shared infra without port/DB collisions."
+  },
+  "master-reference-domain-ssl-checklist": {
+    "vi": "Tài liệu tra cứu: checklist cấu hình tên miền + chứng chỉ SSL cho dev và prod.",
+    "en": "Reference: checklist for domain + SSL certificate setup for dev and prod."
+  },
+  "master-reference-k8s-dashboard-domain-setup": {
+    "vi": "Tài liệu tra cứu: đưa dashboard nội bộ trên k3s ra tên miền có HTTPS + cổng đăng nhập.",
+    "en": "Reference: expose an internal k3s dashboard on a domain with HTTPS + an access gate."
+  },
+  "master-reference-vps-k3s-migration-playbook": {
+    "vi": "Tài liệu tra cứu: chuyển cụm k3s từ máy chủ này sang máy chủ khác an toàn, từng bước.",
+    "en": "Reference: move a k3s cluster from one VPS to another safely, step by step."
+  },
+  "master-reference-sepay-integration-playbook": {
+    "vi": "Tài liệu tra cứu: hướng dẫn đầy đủ tích hợp thanh toán SePay + VietQR (nguồn gốc cho skill payment).",
+    "en": "Reference: full guide to integrating SePay + VietQR payments (source of the payment skill)."
+  },
+  "master-reference-sonarqube": {
+    "vi": "Tài liệu tra cứu: tự dựng SonarQube để soi chất lượng code + độ phủ test + cổng chất lượng.",
+    "en": "Reference: self-host SonarQube for code quality + test coverage + a quality gate."
+  },
+  "master-reference-system-design-patterns": {
+    "vi": "Tài liệu tra cứu: thư viện mẫu thiết kế 28 hệ thống thật (rút gọn URL, feed, chat, thanh toán…).",
+    "en": "Reference: a pattern library of 28 real systems (URL shortener, feed, chat, payments…)."
+  },
+  "mcp-skill-mcp-starter-kit": {
+    "vi": "Bộ khởi tạo để tự dựng một MCP server chuẩn (bảo mật, online, OAuth) — cầu nối cho AI (Claude, ChatGPT) gọi API dự án của bạn qua URL + API key.",
+    "en": "A starter kit to build your own standard MCP server (secure, online, OAuth) — a bridge for AI (Claude, ChatGPT) to call your project's API via URL + API key."
+  },
+  "mcp-reference-feature": {
+    "vi": "Mẫu khai báo: điền thông tin dự án của bạn rồi đưa cho Claude tự dựng khung MCP từ template.",
+    "en": "An intake form: fill in your project details, then hand it to Claude to scaffold the MCP from templates."
+  },
+  "mcp-reference-api-key-backend-guide": {
+    "vi": "Hướng dẫn dựng hệ API key cho backend (key băm, scope phân quyền, middleware) khi dự án chưa có — để MCP có chỗ cắm vào.",
+    "en": "Guide to build a backend API-key system (hashed keys, scopes, middleware) when the project lacks one — so the MCP has something to plug into."
+  },
+  "mcp-reference-quy-trinh-chuan": {
+    "vi": "Quy trình chuẩn (đã chạy thực tế) để dựng một MCP server cho bất kỳ dự án nào, kết nối bằng URL + API key.",
+    "en": "A battle-tested standard procedure to build an MCP server for any project, connected via URL + API key."
+  },
+  "mcp-reference-server-chuc-nang": {
+    "vi": "Tài liệu chức năng: hệ API key + MCP server làm gì, luồng hoạt động và các bước tiếp theo.",
+    "en": "Functional doc: what the API-key + MCP server does, how it flows, and the next steps."
+  },
+  "mcp-reference-template": {
+    "vi": "Khung code MCP mẫu để copy: chạy Streamable HTTP + stdio, xác thực bằng API key + scope.",
+    "en": "A template MCP codebase to copy: runs Streamable HTTP + stdio, authenticated by API key + scopes."
+  },
+  "mcp-reference-readme": {
+    "vi": "Giới thiệu bộ MCP Starter Kit: dùng để làm gì và bắt đầu ra sao.",
+    "en": "Overview of the MCP Starter Kit: what it's for and how to start."
+  }
+}

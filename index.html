@@ -1,0 +1,526 @@
+<!doctype html>
+<html lang="vi" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Agent Hub — Code Web Không Khó</title>
+<link rel="icon" type="image/png" href="assets/logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.2/marked.min.js"></script>
+<script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
+<script src="data.js"></script>
+<script type="module">
+  // Avatar nhân vật (DiceBear "notionists") — sinh trong trình duyệt; mất mạng thì giữ icon Lucide
+  try {
+    const { createAvatar } = await import("https://cdn.jsdelivr.net/npm/@dicebear/core@9.2.2/+esm");
+    const { notionists } = await import("https://cdn.jsdelivr.net/npm/@dicebear/collection@9.2.2/+esm");
+    const cache = new Map();
+    window.hubAvatar = seed => cache.get(seed) || (cache.set(seed, createAvatar(notionists, { seed, radius: 50 }).toDataUri()), cache.get(seed));
+    window.dispatchEvent(new Event("hub-avatars-ready"));
+  } catch (e) { console.warn("Avatar library unavailable, using icons", e); }
+</script>
+<style>
+:root{
+  --bg:#f5f6f8; --panel:#fff; --ink:#1d2129; --muted:#5f6878; --faint:#9aa3b2;
+  --line:#e6e8ec; --hover:#f0f2f6; --accent:#4f46e5; --accent-soft:#eef0ff;
+  --shadow:0 1px 2px rgba(20,24,40,.06),0 6px 20px rgba(20,24,40,.07);
+  --c-start:#e11d48; --c-agent:#7c3aed; --c-command:#2563eb; --c-skill:#059669; --c-rule:#d97706; --c-reference:#0891b2;
+  --code-bg:#f3f4f7;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#0f1115; --panel:#171a21; --ink:#e8eaf0; --muted:#a3abba; --faint:#6b7385;
+  --line:#262a34; --hover:#1e222b; --accent:#8b8cff; --accent-soft:#23254a;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 6px 20px rgba(0,0,0,.3); --code-bg:#1f232c;
+}}
+:root[data-theme="dark"]{
+  --bg:#0f1115; --panel:#171a21; --ink:#e8eaf0; --muted:#a3abba; --faint:#6b7385;
+  --line:#262a34; --hover:#1e222b; --accent:#8b8cff; --accent-soft:#23254a;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 6px 20px rgba(0,0,0,.3); --code-bg:#1f232c;
+}
+*{box-sizing:border-box}
+html{overflow-x:clip}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 "Be Vietnam Pro",system-ui,sans-serif;
+  padding:env(safe-area-inset-top) env(safe-area-inset-right) 0 env(safe-area-inset-left)}
+button{font:inherit;color:inherit;cursor:pointer}
+a{color:var(--accent)}
+.i{width:1em;height:1em;flex:none;vertical-align:-.15em;stroke-width:2}
+.wrap{max-width:1320px;margin:0 auto;padding:24px 16px 72px}
+
+/* header */
+header.top{display:flex;align-items:center;justify-content:space-between;gap:14px 16px;flex-wrap:wrap;margin-bottom:18px}
+.actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:13px;text-decoration:none;color:inherit;min-width:0}
+.logo-ring{position:relative;width:52px;height:52px;flex:none;border-radius:15px;display:grid;place-items:center}
+.logo-ring::before{content:"";position:absolute;inset:-3px;border-radius:18px;background:linear-gradient(135deg,var(--accent),#e11d48,#7c3aed);opacity:.9;filter:blur(1px);animation:ring 6s linear infinite;background-size:200% 200%}
+.brand .logo{position:relative;width:52px;height:52px;border-radius:13px;object-fit:cover;box-shadow:0 4px 14px rgba(20,24,40,.22)}
+.brand-txt{display:flex;flex-direction:column;line-height:1.16;min-width:0}
+.brand-name{font-size:24px;font-weight:800;letter-spacing:-.015em;white-space:nowrap;
+  background:linear-gradient(100deg,var(--accent) 0%,#e11d48 30%,#7c3aed 60%,var(--accent) 100%);
+  background-size:280% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;
+  animation:shine 5s linear infinite}
+.brand-name:hover{animation-duration:1.4s}
+.brand-txt small{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--faint);font-weight:600;margin-top:1px}
+.brand-txt small .i{width:14px;height:14px;color:var(--accent)}
+@keyframes shine{to{background-position:280% 0}}
+@keyframes ring{to{background-position:200% 200%}}
+footer.credit{max-width:1320px;margin:40px auto 0;padding:20px 16px calc(28px + env(safe-area-inset-bottom));border-top:1px solid var(--line);display:flex;align-items:center;gap:12px;color:var(--muted);font-size:13px;flex-wrap:wrap}
+footer.credit img{width:34px;height:34px;border-radius:9px;flex:none}
+footer.credit .sp{flex:1}
+footer.credit a{color:var(--muted);text-decoration:none}
+footer.credit a:hover{color:var(--accent)}
+.sub{font-size:12.5px;color:var(--faint)}
+.intro-link{display:inline-flex;align-items:center;gap:5px;font-size:13px;color:var(--muted);background:none;border:0;padding:5px 8px;border-radius:8px}
+.intro-link:hover{background:var(--hover);color:var(--ink)}
+.spacer{flex:1}
+.btn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--panel);padding:8px 13px;border-radius:10px;font-weight:500;font-size:14px;text-decoration:none;color:var(--ink);white-space:nowrap}
+.btn:hover{background:var(--hover)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.primary:hover{filter:brightness(1.08)}
+.icon-btn{width:38px;height:38px;padding:0;justify-content:center}
+.lang{width:auto;padding:0 12px;font-weight:600;font-size:13px;gap:5px}
+.btn:focus-visible,.card:focus-visible,.tab:focus-visible,.pill:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+/* guide */
+.guide{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(178px,100%),1fr));gap:10px;margin-bottom:20px}
+.guide.hidden{display:none}
+.g{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:12px 14px;display:flex;gap:10px;align-items:flex-start}
+.g .ic{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;flex:none}
+.g .ic .i{width:18px;height:18px}
+.g b{display:block;font-size:13.5px;line-height:1.3}
+.g span{font-size:12px;color:var(--muted);display:block;margin-top:2px}
+
+/* toolbar */
+.toolbar{position:sticky;top:0;z-index:5;background:var(--bg);padding:10px 0 12px;margin-bottom:6px;display:flex;flex-direction:column;gap:10px}
+.pills{display:flex;gap:6px;flex-wrap:wrap}
+.pill{border:1px solid var(--line);background:var(--panel);border-radius:99px;padding:6px 14px;font-size:13px;color:var(--muted);display:inline-flex;align-items:center;gap:6px}
+.pill .n{font-size:11px;background:var(--hover);padding:0 6px;border-radius:99px}
+.pill[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+.pill[aria-pressed="true"] .n{background:rgba(255,255,255,.22)}
+.row2{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.tabs{display:flex;gap:4px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:4px;overflow-x:auto;max-width:100%}
+.tab{border:0;background:none;padding:6px 11px;border-radius:8px;font-size:13px;color:var(--muted);white-space:nowrap;display:flex;align-items:center;gap:6px}
+.tab .n{font-size:11px;background:var(--hover);padding:1px 6px;border-radius:99px}
+.tab[aria-selected="true"]{background:var(--accent-soft);color:var(--accent);font-weight:600}
+select,input[type=search]{font:inherit;font-size:14px;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:8px 12px}
+input[type=search]{flex:1;min-width:160px}
+.count{font-size:13px;color:var(--muted);margin:0 0 12px}
+
+/* grid */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(250px,100%),1fr));gap:14px}
+.card{position:relative;overflow:hidden;text-align:left;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:14px 16px 14px;display:flex;flex-direction:column;gap:6px;min-height:196px;transition:transform .15s,box-shadow .15s,border-color .15s}
+.card:hover{transform:translateY(-2px);box-shadow:var(--shadow);border-color:color-mix(in srgb,var(--tc) 45%,var(--line))}
+.card::before{content:"";position:absolute;inset:0 0 auto 0;height:72px;pointer-events:none;
+  background:radial-gradient(18px 18px at var(--b1x,20%) 34%,hsl(var(--h1) 80% 70% / .40),transparent 70%),
+             radial-gradient(22px 22px at var(--b2x,68%) 60%,hsl(var(--h2) 80% 70% / .34),transparent 70%),
+             radial-gradient(13px 13px at 88% 24%,hsl(var(--h3) 80% 72% / .36),transparent 70%),
+             linear-gradient(var(--hover),transparent);filter:blur(3px);opacity:.85}
+.av-wrap{position:relative;width:max-content}
+.av{position:relative;width:50px;height:50px;border-radius:50%;display:grid;place-items:center;background:#fff;border:1px solid var(--line);box-shadow:0 2px 6px rgba(20,24,40,.09);margin:8px 0 4px;overflow:hidden;flex:none}
+.av img{width:100%;height:100%;display:block}
+.av .i{width:22px;height:22px;color:var(--tc)}
+.av-badge{position:absolute;margin:-19px 0 0 35px;width:21px;height:21px;border-radius:50%;background:var(--tc);color:#fff;display:grid;place-items:center;border:2px solid var(--panel)}
+.av-badge .i{width:11px;height:11px}
+.card h3{margin:0;font-size:15px;font-weight:600;line-height:1.34;min-height:2.68em;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.card p{margin:0;font-size:12.75px;color:var(--muted);line-height:1.5;min-height:3em;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.meta{margin-top:auto;padding-top:8px;display:flex;gap:5px;flex-wrap:wrap;align-items:center}
+.chip{font-size:11px;padding:2px 8px;border-radius:99px;background:var(--hover);color:var(--muted);white-space:nowrap;display:inline-flex;align-items:center;gap:4px;line-height:1.5}
+.chip .i{width:11px;height:11px}
+.chip.type{background:color-mix(in srgb,var(--tc) 14%,transparent);color:var(--tc);font-weight:600}
+.chip.src{border:1px solid var(--line);background:transparent}
+.dl-mini{position:absolute;top:12px;right:12px;width:32px;height:32px;border-radius:9px;border:1px solid var(--line);background:var(--panel);display:grid;place-items:center;opacity:.72;z-index:1}
+.dl-mini .i{width:15px;height:15px}
+.dl-mini:hover{opacity:1;background:var(--hover)}
+.empty{grid-column:1/-1;padding:56px 16px;text-align:center;color:var(--muted)}
+.empty .i{width:34px;height:34px;display:block;margin:0 auto 10px;color:var(--faint)}
+
+/* drawer */
+.scrim{position:fixed;inset:0;background:rgba(10,12,20,.42);opacity:0;pointer-events:none;transition:opacity .2s;z-index:20}
+.scrim.open{opacity:1;pointer-events:auto}
+.drawer{position:fixed;top:0;right:0;height:100dvh;width:min(780px,100%);background:var(--panel);z-index:21;transform:translateX(100%);transition:transform .25s cubic-bezier(.2,.8,.2,1);display:flex;flex-direction:column;box-shadow:-8px 0 32px rgba(0,0,0,.16)}
+.drawer.open{transform:none}
+.d-head{padding:18px 20px 14px;border-bottom:1px solid var(--line);display:flex;gap:14px;align-items:flex-start}
+.d-head .av{width:60px;height:60px;margin:0}.d-head .av .i{width:26px;height:26px}
+.d-head h2{margin:0 0 6px;font-size:19px;line-height:1.3}
+.d-close{margin-left:auto;border:0;background:var(--hover);width:34px;height:34px;border-radius:10px;flex:none;display:grid;place-items:center}
+.d-body{overflow:auto;padding:18px 20px calc(32px + env(safe-area-inset-bottom));flex:1;overscroll-behavior:contain}
+.d-actions{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.box{border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin-bottom:14px}
+.box h4{margin:0 0 8px;font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--faint);font-weight:600}
+.box p{margin:0}
+.motto{font-style:italic;color:var(--muted);border-left:3px solid var(--tc);padding-left:10px;margin-top:10px !important}
+.invoke{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+code,.mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:13px}
+.invoke code{background:var(--code-bg);padding:6px 10px;border-radius:8px;flex:1;min-width:0;overflow-wrap:anywhere}
+.files li{font-size:13px;margin:3px 0;overflow-wrap:anywhere}
+.files ul,.toc ul{margin:0;padding-left:18px}
+.toc ul{columns:2 220px;column-gap:20px}
+.toc li{font-size:13px;margin:2px 0;break-inside:avoid;color:var(--muted)}
+.toc li a{color:inherit;text-decoration:none}.toc li a:hover{color:var(--accent);text-decoration:underline}
+.ftabs{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 10px}
+.ftabs button{border:1px solid var(--line);background:var(--panel);border-radius:8px;padding:4px 10px;font-size:12.5px}
+.ftabs button[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--accent);color:var(--accent)}
+.md{font-size:14.5px;overflow-wrap:anywhere}
+.md h1{font-size:21px}.md h2{font-size:18px;margin-top:26px;padding-top:12px;border-top:1px solid var(--line)}.md h3{font-size:15.5px}
+.md pre{background:var(--code-bg);padding:12px 14px;border-radius:10px;overflow-x:auto;overscroll-behavior-inline:contain}
+.md :not(pre)>code{background:var(--code-bg);padding:1px 5px;border-radius:5px}
+.md table{border-collapse:collapse;display:block;overflow-x:auto;max-width:100%;font-size:13px}
+.md th,.md td{border:1px solid var(--line);padding:6px 9px;text-align:left;vertical-align:top}
+.md blockquote{margin:10px 0;padding:6px 14px;border-left:3px solid var(--accent);background:var(--hover);border-radius:0 8px 8px 0;color:var(--muted)}
+.md img{max-width:100%}
+.toast{position:fixed;bottom:calc(20px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:10px;font-size:14px;opacity:0;transition:.2s;z-index:40;pointer-events:none}
+.toast.show{opacity:1;transform:translateX(-50%)}
+.about{position:fixed;z-index:22;top:50%;left:50%;transform:translate(-50%,-46%) scale(.98);opacity:0;pointer-events:none;transition:.2s;width:min(620px,92vw);max-height:86dvh;overflow:auto;overscroll-behavior:contain;background:var(--panel);border:1px solid var(--line);border-radius:18px;box-shadow:0 20px 60px rgba(0,0,0,.28);padding:22px 24px calc(24px + env(safe-area-inset-bottom))}
+.about.open{opacity:1;pointer-events:auto;transform:translate(-50%,-50%) scale(1)}
+.about h3{margin:0 0 4px;font-size:20px;padding-right:34px}
+.about h4{margin:18px 0 8px;font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--faint)}
+.about p{margin:0;color:var(--muted);font-size:14px}
+.ab-list{list-style:none;padding:0;margin:0;display:grid;gap:8px}
+.ab-list li{display:flex;gap:8px;align-items:flex-start;font-size:14px}
+.ab-list li .i{width:16px;height:16px;color:var(--accent);margin-top:2px;flex:none}
+.ab-close{position:absolute;top:15px;right:15px;border:0;background:var(--hover);width:32px;height:32px;border-radius:9px;display:grid;place-items:center}
+@media (max-width:640px){ .brand-name{font-size:20px} .logo-ring,.brand .logo{width:46px;height:46px} .hide-sm{display:none} .toolbar{top:0} }
+@media (max-width:380px){ .brand-name{font-size:18px} }
+@media (prefers-reduced-motion:reduce){ *{transition:none !important} .brand-name,.logo-ring::before{animation:none !important} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <a class="brand" href="https://github.com/fdhhhdjd" target="_blank" rel="noopener" title="Code Web Không Khó">
+      <span class="logo-ring"><img class="logo" src="assets/logo.png" alt="Code Web Không Khó logo"></span>
+      <span class="brand-txt">
+        <b class="brand-name">Code Web Không Khó</b>
+        <small><i data-lucide="layers" class="i"></i> Agent Hub <span id="genDate"></span></small>
+      </span>
+    </a>
+    <div class="actions">
+      <button class="intro-link" id="toggleGuide" aria-expanded="true"><i data-lucide="info" class="i"></i> <span data-t="intro"></span></button>
+      <button class="btn icon-btn lang" id="langBtn" title="Ngôn ngữ / Language"><i data-lucide="languages" class="i"></i><span id="langLbl">VI</span></button>
+      <button class="btn icon-btn" id="themeBtn" aria-label="Sáng/Tối"><i data-lucide="sun-moon" class="i"></i></button>
+      <a class="btn primary" id="ghAll" target="_blank" rel="noopener"><i data-lucide="github" class="i"></i> <span data-t="viewGH"></span></a>
+    </div>
+  </header>
+
+  <section class="guide" id="guide" aria-label="Giới thiệu"></section>
+
+  <div class="toolbar">
+    <div class="pills" id="colls" role="group" aria-label="Bộ"></div>
+    <div class="row2">
+      <div class="tabs" role="tablist" id="tabs"></div>
+      <select id="tagSel" aria-label="Chủ đề"></select>
+      <input type="search" id="q" aria-label="Tìm kiếm">
+      <a class="btn hide-sm" id="ghScope" target="_blank" rel="noopener"><i data-lucide="external-link" class="i"></i> <span></span></a>
+    </div>
+  </div>
+  <p class="count" id="count"></p>
+  <div class="grid" id="grid"></div>
+</div>
+<footer class="credit">
+  <img src="assets/logo.png" alt="Code Web Không Khó">
+  <span><b>Code Web Không Khó</b> — <span data-t="footerNote"></span></span>
+  <span class="sp"></span>
+  <a href="https://github.com/fdhhhdjd/AI-Agent-Master" target="_blank" rel="noopener">AI-Agent-Master ↗</a>
+  <a href="https://github.com/fdhhhdjd/AI-Agent-Security-DevOps" target="_blank" rel="noopener">AI-Agent-Security-DevOps ↗</a>
+  <a href="https://github.com/fdhhhdjd/MCP-STARTER-KIT" target="_blank" rel="noopener">MCP-STARTER-KIT ↗</a>
+</footer>
+
+<div class="scrim" id="aScrim"></div>
+<div class="about" id="about" role="dialog" aria-modal="true" aria-labelledby="aboutTitle" aria-hidden="true">
+  <button class="ab-close" id="aboutClose" aria-label="Đóng"></button>
+  <h3 id="aboutTitle"></h3>
+  <div id="aboutBody"></div>
+</div>
+<div class="scrim" id="scrim"></div>
+<aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-labelledby="dTitle" aria-hidden="true">
+  <div class="d-head" id="dHead"></div>
+  <div class="d-body" id="dBody"></div>
+</aside>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+(() => {
+  const D = window.HUB_DATA, $ = s => document.querySelector(s);
+  if (!D) { document.body.innerHTML = '<p style="padding:40px">Chưa có data.js — chạy <code>python3 agent-hub/build.py</code></p>'; return; }
+
+  const T = {
+    intro:   {vi:"Giới thiệu", en:"About"},
+    aboutTitle:{vi:"Agent Hub là gì?", en:"What is Agent Hub?"},
+    aboutIntro:{vi:"Nơi tra cứu nhanh {n} agent, skill, command, rule và tài liệu của Code Web Không Khó — gom từ 3 bộ. Bấm một thẻ để xem tóm tắt và mở file gốc trên GitHub.", en:"A quick catalog of {n} agents, skills, commands, rules and docs by Code Web Không Khó — from 3 sets. Click a card to see a summary and open the source on GitHub."},
+    aboutSets:{vi:"3 bộ", en:"3 sets"},
+    aboutTypes:{vi:"5 loại", en:"5 types"},
+    aboutHow:{vi:"Cách dùng", en:"How to use"},
+    aboutSteps:{vi:["Lọc theo bộ, loại hoặc chủ đề; hoặc gõ phím / để tìm.","Bấm một thẻ để xem: dùng để làm gì, cách dùng, danh sách file.","Bấm ‘Mở trên GitHub’ để đọc hoặc tải file gốc.","Đổi VI/EN và sáng/tối ở góc trên phải."], en:["Filter by set, type or topic; or press / to search.","Click a card to see: what it does, how to use, its files.","Click ‘Open on GitHub’ to read or get the source file.","Toggle VI/EN and light/dark at the top right."]},
+    footerNote:{vi:"bộ agent, skill & tài liệu dùng lại cho mọi dự án.", en:"reusable agents, skills & docs for any project."},
+    viewGH:  {vi:"Xem trên GitHub", en:"View on GitHub"},
+    allTypes:{vi:"Tất cả", en:"All"},
+    allColl: {vi:"Tất cả các bộ", en:"All sets"},
+    allTags: {vi:"Mọi chủ đề", en:"All topics"},
+    search:  {vi:"Tìm kiếm… (phím /)", en:"Search… (press /)"},
+    items:   {vi:"mục", en:"items"},
+    openRepo:{vi:"Mở repo bộ này", en:"Open this set on GitHub"},
+    empty:   {vi:"Không tìm thấy mục nào. Thử từ khoá khác.", en:"Nothing found. Try another keyword."},
+    use:     {vi:"Dùng để làm gì", en:"What it does"},
+    how:     {vi:"Cách dùng", en:"How to use"},
+    files:   {vi:"File", en:"Files"},
+    words:   {vi:"từ", en:"words"},
+    toc:     {vi:"Mục lục", en:"Contents"},
+    content: {vi:"Nội dung", en:"Content"},
+    openGH:  {vi:"Mở trên GitHub", en:"Open on GitHub"},
+    copyL:   {vi:"Copy link", en:"Copy link"},
+    openFiles:{vi:"Mở file trên GitHub", en:"Open files on GitHub"},
+    openHint:{vi:"Bấm đường dẫn để đọc/tải nội dung đầy đủ trên GitHub.", en:"Click a path to read/get the full content on GitHub."},
+    copyCmd: {vi:"Copy lệnh", en:"Copy command"},
+    okOpen:  {vi:"Đang mở GitHub…", en:"Opening GitHub…"},    okL:     {vi:"Đã copy link", en:"Link copied"},
+    okCmd:   {vi:"Đã copy lệnh", en:"Command copied"},
+    install: {vi:"Bấm đường dẫn bên dưới để mở file gốc trên GitHub.", en:"Click a path below to open the source file on GitHub."},
+  };
+  const TYPES = {
+    all:      {icon:"layout-grid", color:"var(--accent)"},
+    start:    {icon:"rocket", color:"var(--c-start)",  vi:"Bắt đầu", en:"Start", wv:"Điểm vào", we:"Entry point", hv:"CLAUDE.md — Claude đọc đầu tiên, nạp mọi thứ luôn bật.", he:"CLAUDE.md — read first, loads the always-on set."},
+    agent:    {icon:"user-round", color:"var(--c-agent)", vi:"Agent", en:"Agent", wv:"Nhân vật vai trò", we:"Role persona", hv:"Một \"chuyên gia ảo\" (PM, Dev, QA…) để Claude đóng vai.", he:"A role persona (PM, Dev, QA…) for Claude to play."},
+    command:  {icon:"terminal", color:"var(--c-command)", vi:"Command", en:"Command", wv:"Lệnh gõ /tên", we:"Slash command", hv:"Quy trình chạy khi bạn gõ /tên, ví dụ /harden.", he:"A workflow you run by typing /name, e.g. /harden."},
+    skill:    {icon:"puzzle", color:"var(--c-skill)", vi:"Skill", en:"Skill", wv:"Kỹ năng tự kích hoạt", we:"Auto skill", hv:"Tự bật khi bạn mô tả đúng việc, hoặc gọi /tên.", he:"Auto-activates when you describe the task, or call /name."},
+    rule:     {icon:"ruler", color:"var(--c-rule)", vi:"Rule", en:"Rule", wv:"Luật luôn bật", we:"Always-on rule", hv:"Ràng buộc Claude luôn tuân thủ trong mọi phiên.", he:"A constraint Claude always follows every session."},
+    reference:{icon:"book-open", color:"var(--c-reference)", vi:"Reference", en:"Reference", wv:"Tài liệu tra cứu", we:"Reference doc", hv:"Kiến thức sâu, Claude tự đọc khi làm đúng mảng.", he:"Deep knowledge Claude reads when working in that area."},
+  };
+  const TAGS = {
+    infra:     {vi:"Hạ tầng & Deploy", en:"Infra & Deploy", icon:"server"},
+    security:  {vi:"Bảo mật", en:"Security", icon:"shield-check"},
+    cloud:     {vi:"Cloud", en:"Cloud", icon:"cloud"},
+    backend:   {vi:"Backend", en:"Backend", icon:"code-xml"},
+    frontend:  {vi:"Frontend & UI", en:"Frontend & UI", icon:"palette"},
+    ai:        {vi:"AI & LLM", en:"AI & LLM", icon:"bot"},
+    ops:       {vi:"Giám sát & Vận hành", en:"Monitoring & Ops", icon:"activity"},
+    data:      {vi:"Dữ liệu & Backup", en:"Data & Backup", icon:"hard-drive"},
+    compliance:{vi:"Tuân thủ", en:"Compliance", icon:"scale"},
+    product:   {vi:"Sản phẩm & Quy trình", en:"Product & Process", icon:"compass"},
+    quality:   {vi:"Chất lượng & Test", en:"Quality & Test", icon:"flask-conical"},
+    other:     {vi:"Khác", en:"Other", icon:"file-text"},
+  };
+  const GROUPS = {
+    Security:{vi:"Bảo mật",en:"Security"}, DevOps:{vi:"DevOps",en:"DevOps"},
+    Infrastructure:{vi:"Hạ tầng",en:"Infrastructure"}, Compliance:{vi:"Tuân thủ",en:"Compliance"}, MCP:{vi:"MCP",en:"MCP"},
+  };
+  const COLL = {
+    master: {vi:"Bộ Master", en:"Master", icon:"box"},
+    secops: {vi:"Bảo mật & DevOps", en:"Security & DevOps", icon:"shield"},
+    mcp:    {vi:"Xây MCP riêng", en:"MCP Starter Kit", icon:"plug"},
+  };
+
+  let lang = (() => { try { return localStorage.getItem("hub.lang") || "vi"; } catch { return "vi"; } })();
+  const tr = k => (T[k] || {})[lang] || k;
+  const items = D.items;
+  const state = {coll:"all", type:"all", tag:"", q:""};
+
+  const ic = (n, cls="i") => `<i data-lucide="${n}" class="${cls}"></i>`;
+  const paintAvatars = () => { if (!window.hubAvatar) return;
+    document.querySelectorAll(".av[data-seed]:not(.done)").forEach(el => {
+      el.innerHTML = `<img alt="" src="${window.hubAvatar(el.dataset.seed)}">`; el.classList.add("done"); }); };
+  const paintIcons = () => { if (window.lucide) lucide.createIcons({attrs:{"aria-hidden":"true"}}); paintAvatars(); };
+  window.addEventListener("hub-avatars-ready", paintAvatars);
+  const hue = s => [...s].reduce((a,c)=>(a*31+c.charCodeAt(0))>>>0, 7);
+  const esc = s => String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+  const tagLabel = k => (TAGS[k]||TAGS.other)[lang];
+  const tagIcon = k => (TAGS[k]||TAGS.other).icon;
+  const typeLabel = t => TYPES[t][lang];
+  const groupLabel = g => (GROUPS[g]||{vi:g,en:g})[lang];
+  const iconFor = it => ic(it.type==="start" ? "rocket" : tagIcon(it.tags[0]));
+  const descOf = it => (it.simple && it.simple[lang]) || it.desc;
+
+  try { const th = localStorage.getItem("hub.theme"); if (th) document.documentElement.dataset.theme = th; } catch {}
+  $("#themeBtn").onclick = () => {
+    const cur = document.documentElement.dataset.theme || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+    const nx = cur === "dark" ? "light" : "dark"; document.documentElement.dataset.theme = nx;
+    try { localStorage.setItem("hub.theme", nx); } catch {}
+  };
+  $("#langBtn").onclick = () => { lang = lang === "vi" ? "en" : "vi"; try { localStorage.setItem("hub.lang", lang); } catch {}
+    document.documentElement.lang = lang; applyLang(); };
+
+  const repoOf = c => D.repos[c==="all"?"master":c];
+  $("#ghAll").href = D.repos.master;
+  $("#genDate").textContent = "· " + D.generated;
+
+  function applyLang(){
+    $("#langLbl").textContent = lang.toUpperCase();
+    $("#ghAll").href = repoOf(state.coll);
+    document.querySelectorAll("[data-t]").forEach(el => el.textContent = tr(el.dataset.t));
+    $("#q").placeholder = tr("search");
+    buildGuide(); buildColls(); buildTabs(); buildTags(); render(); paintIcons();
+  }
+
+  function buildGuide(){
+    $("#guide").innerHTML = Object.entries(TYPES).filter(([k])=>k!=="all").map(([k,t]) =>
+      `<div class="g"><div class="ic" style="background:color-mix(in srgb,${t.color} 15%,transparent);color:${t.color}">${ic(t.icon)}</div>
+       <div><b>${t[lang]} · ${t["w"+lang[0]]}</b><span>${t["h"+lang[0]]}</span></div></div>`).join("");
+  }
+  function buildColls(){
+    const c = items.reduce((a,i)=>(a[i.source]=(a[i.source]||0)+1,a),{});
+    $("#colls").innerHTML =
+      `<button class="pill" data-coll="all" aria-pressed="${state.coll==='all'}">${ic("layout-grid")} ${tr("allColl")} <span class="n">${items.length}</span></button>` +
+      Object.entries(COLL).filter(([k])=>c[k]).map(([k,v]) =>
+        `<button class="pill" data-coll="${k}" aria-pressed="${state.coll===k}">${ic(v.icon)} ${v[lang]} <span class="n">${c[k]}</span></button>`).join("");
+  }
+  function scoped(){ return items.filter(i => state.coll==="all" || i.source===state.coll); }
+  function buildTabs(){
+    const pool = scoped();
+    const c = pool.reduce((a,i)=>(a[i.type]=(a[i.type]||0)+1,a),{});
+    $("#tabs").innerHTML =
+      `<button class="tab" role="tab" data-type="all" aria-selected="${state.type==='all'}">${ic("layout-grid")} ${tr("allTypes")}<span class="n">${pool.length}</span></button>` +
+      ["start","agent","command","skill","rule","reference"].filter(k=>c[k]).map(k =>
+        `<button class="tab" role="tab" data-type="${k}" aria-selected="${state.type===k}">${ic(TYPES[k].icon)} ${typeLabel(k)}<span class="n">${c[k]}</span></button>`).join("");
+  }
+  function buildTags(){
+    const present = [...new Set(scoped().flatMap(i=>i.tags))];
+    const order = Object.keys(TAGS).filter(k=>present.includes(k));
+    $("#tagSel").innerHTML = `<option value="">${tr("allTags")}</option>` +
+      order.map(k=>`<option value="${k}"${state.tag===k?" selected":""}>${esc(tagLabel(k))}</option>`).join("");
+  }
+
+  $("#colls").onclick = e => { const b=e.target.closest("[data-coll]"); if(!b) return;
+    state.coll=b.dataset.coll; state.type="all"; state.tag=""; buildColls(); buildTabs(); buildTags(); render(); paintIcons(); };
+  $("#tabs").onclick = e => { const b=e.target.closest(".tab"); if(!b) return; state.type=b.dataset.type; render(); paintIcons(); };
+  $("#tagSel").onchange = e => { state.tag=e.target.value; render(); paintIcons(); };
+  $("#q").oninput = e => { state.q=e.target.value.trim().toLowerCase(); render(); paintIcons(); };
+
+  function filtered(){
+    return scoped().filter(i =>
+      (state.type==="all" || i.type===state.type) &&
+      (!state.tag || i.tags.includes(state.tag)) &&
+      (!state.q || (i.title+" "+i.slug+" "+i.desc+" "+i.group+" "+i.tags.map(tagLabel).join(" ")).toLowerCase().includes(state.q)));
+  }
+
+  function render(){
+    document.querySelectorAll(".pill").forEach(b=>b.setAttribute("aria-pressed", String(b.dataset.coll===state.coll)));
+    document.querySelectorAll(".tab").forEach(b=>b.setAttribute("aria-selected", String(b.dataset.type===state.type)));
+    const list = filtered();
+    $("#count").textContent = `${list.length} ${tr("items")}` + (state.type!=="all" ? ` · ${typeLabel(state.type)}` : "");
+    $("#ghAll").href = repoOf(state.coll);
+    const ds = $("#ghScope"), span = ds.querySelector("span");
+    if (state.coll !== "all") { ds.style.display=""; ds.href=repoOf(state.coll); span.textContent=`${tr("openRepo")}: ${COLL[state.coll][lang]}`; }
+    else ds.style.display="none";
+    $("#grid").innerHTML = list.length ? list.map(cardHTML).join("")
+      : `<div class="empty">${ic("search-x")}${esc(tr("empty"))}</div>`;
+  }
+
+  function cardHTML(it){
+    const t = TYPES[it.type], h1=hue(it.slug)%360;
+    const extra = [];
+    if (it.group) extra.push(`<span class="chip src">${esc(groupLabel(it.group))}</span>`);
+    it.tags.slice(0,2).forEach(g=>extra.push(`<span class="chip">${ic(tagIcon(g))} ${esc(tagLabel(g))}</span>`));
+    if (it.files.length>1) extra.push(`<span class="chip">${ic("folder")} ${it.files.length}</span>`);
+    const shortName = esc(it.slug.split("/").pop());
+    return `<div class="card" tabindex="0" role="button" data-id="${it.id}"
+      style="--tc:${t.color};--h1:${h1};--h2:${(h1+120)%360};--h3:${(h1+240)%360};--b1x:${15+hue(it.id)%25}%;--b2x:${50+hue(it.title)%25}%"
+      aria-label="${esc(it.title)}">
+      <a class="dl-mini" href="${it.url}" target="_blank" rel="noopener" title="${tr('openGH')}" aria-label="${shortName}">${ic("external-link")}</a>
+      <div class="av-wrap"><div class="av" data-seed="${esc(it.source+'/'+it.slug)}">${iconFor(it)}</div><span class="av-badge" title="${typeLabel(it.type)}">${ic(t.icon)}</span></div>
+      <h3>${esc(it.title)}</h3>
+      <p>${esc(descOf(it))}</p>
+      <div class="meta"><span class="chip type">${ic(t.icon)} ${typeLabel(it.type)}</span>${extra.join("")}</div>
+    </div>`;
+  }
+
+  $("#grid").addEventListener("click", e => {
+    if (e.target.closest("a.dl-mini")) return;   // để link GitHub mở tab mới
+    const c = e.target.closest(".card"); if (c) open(c.dataset.id);
+  });
+  $("#grid").addEventListener("keydown", e => {
+    const c = e.target.closest(".card");
+    if (c && (e.key==="Enter"||e.key===" ") && e.target===c) { e.preventDefault(); open(c.dataset.id); }
+  });
+
+  let tt; function toast(m){ const t=$("#toast"); t.textContent=m; t.classList.add("show"); clearTimeout(tt); tt=setTimeout(()=>t.classList.remove("show"),1800); }
+  async function copy(text,msg){ try{ await navigator.clipboard.writeText(text); toast(msg);}catch{ toast("Ctrl/Cmd+C"); } }
+
+  function renderMd(src){
+    if (!window.marked) return `<pre>${esc(src)}</pre>`;
+    const body = src.replace(/^---\n[\s\S]*?\n---\n/, "");
+    const html = marked.parse(body,{gfm:true});
+    const doc = new DOMParser().parseFromString(html,"text/html");
+    doc.querySelectorAll("script,iframe,object,embed,style,link").forEach(n=>n.remove());
+    doc.querySelectorAll("*").forEach(n=>[...n.attributes].forEach(a=>{ if(/^on/i.test(a.name)||/^\s*javascript:/i.test(a.value)) n.removeAttribute(a.name); }));
+    doc.querySelectorAll("h2").forEach((h,i)=>h.id="sec-"+i);
+    return doc.body.innerHTML;
+  }
+
+  let lastFocus=null, cur=null;
+  function open(id, push=true){
+    const it = items.find(i=>i.id===id); if(!it) return;
+    cur=it; lastFocus=document.activeElement;
+    const t=TYPES[it.type];
+    $("#drawer").style.setProperty("--tc", t.color);
+    const groupChip = it.group ? `<span class="chip src">${esc(groupLabel(it.group))}</span>` : "";
+    $("#dHead").innerHTML = `<div class="av" data-seed="${esc(it.source+'/'+it.slug)}" style="--tc:${t.color}">${iconFor(it)}</div>
+      <div style="min-width:0"><h2 id="dTitle">${esc(it.title)}</h2>
+      <div class="meta" style="padding:0"><span class="chip type" style="--tc:${t.color}">${ic(t.icon)} ${typeLabel(it.type)} · ${t["w"+lang[0]]}</span>
+      <span class="chip src">${ic(COLL[it.source].icon)} ${COLL[it.source][lang]}</span>${groupChip}
+      ${it.tags.map(g=>`<span class="chip">${ic(tagIcon(g))} ${esc(tagLabel(g))}</span>`).join("")}</div></div>
+      <button class="d-close" id="dClose" aria-label="Đóng">${ic("x")}</button>`;
+    const multi = it.files.length>1;
+    $("#dBody").innerHTML = `
+      <div class="d-actions">
+        <a class="btn primary" href="${it.url}" target="_blank" rel="noopener">${ic("github")} ${tr("openGH")}</a>
+        <button class="btn" id="aLink">${ic("link")} ${tr("copyL")}</button>
+      </div>
+      <div class="box"><h4>${tr("use")}</h4><p>${esc(descOf(it))}</p>${it.motto?`<p class="motto">“${esc(it.motto)}”</p>`:""}</div>
+      <div class="box"><h4>${tr("how")}</h4><div class="invoke"><code>${esc(it.invoke)}</code>${it.invoke.startsWith("/")?`<button class="btn" id="aCmd">${ic("copy")} ${tr("copyCmd")}</button>`:""}</div>
+        <p style="margin-top:8px;font-size:13px;color:var(--muted)">${t["h"+lang[0]]}</p></div>
+      <div class="box files"><h4>${tr("files")} (${it.files.length})</h4><ul>${it.files.map(f=>`<li class="mono"><a href="${f.url}" target="_blank" rel="noopener">${ic("file-code")} ${esc(f.path)}</a></li>`).join("")}</ul>
+        <p style="margin:8px 0 0;font-size:12.5px;color:var(--muted)">${tr("openHint")}</p></div>`;
+    paintIcons();
+    $("#dClose").onclick = close;
+    $("#aLink").onclick = () => copy(it.url, tr("okL"));
+    const ac=$("#aCmd"); if (ac) ac.onclick = () => copy(it.invoke, tr("okCmd"));
+    $("#dBody").scrollTop = 0;
+    $("#drawer").classList.add("open"); $("#scrim").classList.add("open");
+    $("#drawer").setAttribute("aria-hidden","false"); document.body.style.overflow="hidden";
+    if (push) history.replaceState(null,"","#"+it.id);
+    setTimeout(()=>$("#dClose").focus(),50);
+  }
+  function close(){
+    $("#drawer").classList.remove("open"); $("#scrim").classList.remove("open");
+    $("#drawer").setAttribute("aria-hidden","true"); document.body.style.overflow="";
+    history.replaceState(null,"",location.pathname+location.search); cur=null; if (lastFocus) lastFocus.focus();
+  }
+  // ----- About modal -----
+  function openAbout(){
+    $("#aboutTitle").textContent = tr("aboutTitle");
+    const total = items.length;
+    const sets = Object.entries(COLL).map(([k,v])=>{ const n=items.filter(i=>i.source===k).length;
+      return `<li>${ic(v.icon)} <span><b>${v[lang]}</b> — ${n} ${tr("items")}</span></li>`; }).join("");
+    const types = Object.entries(TYPES).filter(([k])=>k!=="all").map(([k,t])=>
+      `<li>${ic(t.icon)} <span><b>${t[lang]}</b> — ${t["h"+lang[0]]}</span></li>`).join("");
+    const steps = (tr("aboutSteps")||[]).map(x=>`<li>${ic("chevron-right")} <span>${x}</span></li>`).join("");
+    $("#aboutBody").innerHTML = `<p>${tr("aboutIntro").replace("{n}",total)}</p>
+      <h4>${tr("aboutSets")}</h4><ul class="ab-list">${sets}</ul>
+      <h4>${tr("aboutTypes")}</h4><ul class="ab-list">${types}</ul>
+      <h4>${tr("aboutHow")}</h4><ul class="ab-list">${steps}</ul>`;
+    $("#aboutClose").innerHTML = ic("x");
+    paintIcons();
+    $("#about").classList.add("open"); $("#aScrim").classList.add("open"); $("#about").setAttribute("aria-hidden","false");
+  }
+  function closeAbout(){ $("#about").classList.remove("open"); $("#aScrim").classList.remove("open"); $("#about").setAttribute("aria-hidden","true"); }
+  $("#toggleGuide").onclick = openAbout;
+  $("#aboutClose").onclick = closeAbout;
+  $("#aScrim").onclick = closeAbout;
+
+  $("#scrim").onclick = close;
+  document.addEventListener("keydown", e => {
+    if (e.key==="Escape" && $("#about").classList.contains("open")) closeAbout();
+    else if (e.key==="Escape" && cur) close();
+    else if (e.key==="/" && !cur && document.activeElement!==$("#q")) { e.preventDefault(); $("#q").focus(); }
+    else if (e.key==="Tab" && cur) {
+      const f=[...$("#drawer").querySelectorAll("button,a[href],[tabindex]")].filter(x=>x.offsetParent); if(!f.length) return;
+      if (e.shiftKey && document.activeElement===f[0]) { e.preventDefault(); f[f.length-1].focus(); }
+      else if (!e.shiftKey && document.activeElement===f[f.length-1]) { e.preventDefault(); f[0].focus(); }
+    }
+  });
+
+  document.documentElement.lang = lang;
+  applyLang();
+  if (location.hash.length>1) open(location.hash.slice(1), false);
+})();
+</script>
+</body>
+</html>
