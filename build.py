@@ -153,6 +153,12 @@ def tags_for(key):
 
 
 _BOX = set("─│┌┐└┘├┤┬┴┼╔╗╚╝═║╠╣╦╩╬╭╮╯╰")
+_CMD = re.compile(r"(curl |wget |docker exec|docker compose (ps|logs|run|exec)|kubectl |ssh |psql |redis-cli|git log|git reflog|apt-get |systemctl |htpasswd|-d '"+chr(39)+r"|--[a-z]|https?://|>&|\| ?grep)")
+def _looks_cmd(body):
+    """True nếu khối chứa LỆNH thật (flag/URL/payload) — không phải sơ đồ khối thuần."""
+    return bool(_CMD.search(body))
+
+
 def extract_flows(text):
     """Chỉ lấy SƠ ĐỒ KHỐI (mermaid + ascii có khung vẽ) — KHÔNG lấy prose/step/code."""
     flows = []
@@ -170,7 +176,7 @@ def extract_flows(text):
                 flows.append({"type": "mermaid", "code": chr(10).join(block).strip()})
             else:
                 boxlines = sum(1 for b in block if any(c in b for c in _BOX))
-                if boxlines >= 3:
+                if boxlines >= 3 and not _looks_cmd(chr(10).join(block)):
                     keep = block[:26]
                     code = chr(10).join(keep).rstrip()
                     if len(block) > 26:
@@ -183,6 +189,32 @@ def extract_flows(text):
     return flows[:2]
 
 
+def _mnode(t):
+    t = re.sub(r"[\U0001F000-\U0001FAFF\u2600-\u27BF\u2190-\u21FF\u2B00-\u2BFF\u2B50\u2705\u274C\u2b06-\u2b07]", "", t)
+    t = t.replace(chr(34), "").replace("`", "").replace("#", "").replace("[", "(").replace("]", ")").replace("|", "/")
+    t = re.sub(r"\s+", " ", t).strip(" -–—·:")
+    return (t[:42] + "…") if len(t) > 42 else t
+
+
+def outline_flow(toc):
+    """Tự sinh sơ đồ luồng TỔNG QUAN từ tên các phần (không thêm chi tiết mới)."""
+    heads = [h for h in (_mnode(x) for x in toc) if h]
+    if len(heads) < 3:
+        return None
+    more = len(heads) > 7
+    heads = heads[:7]
+    out = ["flowchart TD"]
+    for i, h in enumerate(heads):
+        out.append("  n%d[\"%d· %s\"]" % (i, i + 1, h))
+    if more:
+        out.append("  nx[\"…\"]")
+    for i in range(len(heads) - 1):
+        out.append("  n%d --> n%d" % (i, i + 1))
+    if more:
+        out.append("  n%d --> nx" % (len(heads) - 1))
+    return {"type": "mermaid", "code": chr(10).join(out), "auto": True}
+
+
 
 def make_item(kind, source, slug, main, base, extra=(), invoke="", group=""):
     text = main.read_text(encoding="utf-8")
@@ -190,6 +222,12 @@ def make_item(kind, source, slug, main, base, extra=(), invoke="", group=""):
     files = [main] + [f for f in extra if f != main]
     tag_seed = slug + " " + disp_path(main, base) + " " + group
     words = sum(len(f.read_text(encoding="utf-8").split()) for f in files)
+    _toc = headings(body)[:22]
+    _flows = extract_flows(text)
+    if not _flows:
+        _of = outline_flow(_toc)
+        if _of:
+            _flows = [_of]
     file_objs = [{"path": disp_path(f, base), "url": BLOB[source] + disp_path(f, base)} for f in files]
     item_id = f"{source}-{kind}-{slug}".replace("/", "-")
     meta = {}
@@ -214,8 +252,8 @@ def make_item(kind, source, slug, main, base, extra=(), invoke="", group=""):
         "url": file_objs[0]["url"],
         "repo": REPO[source],
         "access": ACCESS[source],
-        "toc": headings(body)[:22],
-        "flows": extract_flows(text),
+        "toc": _toc,
+        "flows": _flows,
         "files": file_objs,
         "words": words,
         "readmin": max(1, round(words / 200)),
