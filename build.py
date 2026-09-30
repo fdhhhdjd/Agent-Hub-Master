@@ -153,12 +153,6 @@ def tags_for(key):
 
 
 _BOX = set("─│┌┐└┘├┤┬┴┼╔╗╚╝═║╠╣╦╩╬╭╮╯╰")
-_CMD = re.compile(r"(curl |wget |docker exec|docker compose (ps|logs|run|exec)|kubectl |ssh |psql |redis-cli|git log|git reflog|apt-get |systemctl |htpasswd|-d '"+chr(39)+r"|--[a-z]|https?://|>&|\| ?grep)")
-def _looks_cmd(body):
-    """True nếu khối chứa LỆNH thật (flag/URL/payload) — không phải sơ đồ khối thuần."""
-    return bool(_CMD.search(body))
-
-
 def extract_flows(text):
     """Chỉ lấy SƠ ĐỒ KHỐI (mermaid + ascii có khung vẽ) — KHÔNG lấy prose/step/code."""
     flows = []
@@ -176,7 +170,7 @@ def extract_flows(text):
                 flows.append({"type": "mermaid", "code": chr(10).join(block).strip()})
             else:
                 boxlines = sum(1 for b in block if any(c in b for c in _BOX))
-                if boxlines >= 3 and not _looks_cmd(chr(10).join(block)):
+                if boxlines >= 3:
                     keep = block[:26]
                     code = chr(10).join(keep).rstrip()
                     if len(block) > 26:
