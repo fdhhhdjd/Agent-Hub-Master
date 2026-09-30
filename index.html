@@ -19,6 +19,11 @@
     window.hubAvatar = seed => cache.get(seed) || (cache.set(seed, createAvatar(notionists, { seed, radius: 50 }).toDataUri()), cache.get(seed));
     window.dispatchEvent(new Event("hub-avatars-ready"));
   } catch (e) { console.warn("Avatar library unavailable, using icons", e); }
+  try {
+    const m = await import("https://cdn.jsdelivr.net/npm/mermaid@11.4.1/dist/mermaid.esm.min.mjs");
+    window.mermaid = m.default;
+    window.dispatchEvent(new Event("hub-mermaid-ready"));
+  } catch (e) { console.warn("Mermaid unavailable, diagrams shown as text", e); }
 </script>
 <style>
 :root{
@@ -78,6 +83,7 @@ footer.credit a:hover{color:var(--accent)}
 .btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
 .btn.primary:hover{filter:brightness(1.08)}
 .icon-btn{width:38px;height:38px;padding:0;justify-content:center}
+#sentinel{height:1px}
 .lang{width:auto;padding:0 12px;font-weight:600;font-size:13px;gap:5px}
 .btn:focus-visible,.card:focus-visible,.tab:focus-visible,.pill:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 
@@ -168,6 +174,9 @@ code,.mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:13px}
 .md th,.md td{border:1px solid var(--line);padding:6px 9px;text-align:left;vertical-align:top}
 .md blockquote{margin:10px 0;padding:6px 14px;border-left:3px solid var(--accent);background:var(--hover);border-radius:0 8px 8px 0;color:var(--muted)}
 .md img{max-width:100%}
+.md .mermaid{margin:12px 0;overflow-x:auto;text-align:center;background:var(--hover);border:1px solid var(--line);border-radius:10px;padding:10px}
+.md .mermaid svg{max-width:100%;height:auto}
+.md .code-note{color:var(--faint);font-style:italic;font-size:12.5px;background:var(--hover);border-radius:8px;padding:6px 10px;margin:8px 0}
 .toast{position:fixed;bottom:calc(20px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:10px;font-size:14px;opacity:0;transition:.2s;z-index:40;pointer-events:none}
 .toast.show{opacity:1;transform:translateX(-50%)}
 .about{position:fixed;z-index:22;top:50%;left:50%;transform:translate(-50%,-46%) scale(.98);opacity:0;pointer-events:none;transition:.2s;width:min(620px,92vw);max-height:86dvh;overflow:auto;overscroll-behavior:contain;background:var(--panel);border:1px solid var(--line);border-radius:18px;box-shadow:0 20px 60px rgba(0,0,0,.28);padding:22px 24px calc(24px + env(safe-area-inset-bottom))}
@@ -215,6 +224,7 @@ code,.mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:13px}
   </div>
   <p class="count" id="count"></p>
   <div class="grid" id="grid"></div>
+  <div id="sentinel" aria-hidden="true"></div>
 </div>
 <footer class="credit">
   <img src="assets/logo.png" alt="Code Web Không Khó">
@@ -270,6 +280,8 @@ code,.mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:13px}
     copyL:   {vi:"Copy link", en:"Copy link"},
     openFiles:{vi:"Mở file trên GitHub", en:"Open files on GitHub"},
     openHint:{vi:"Bấm đường dẫn để đọc/tải nội dung đầy đủ trên GitHub.", en:"Click a path to read/get the full content on GitHub."},
+    flow:    {vi:"Luồng & giải thích", en:"Flow & explanation"},
+    codeNote:{vi:"— đoạn code, xem đầy đủ trên GitHub —", en:"— code block, see full source on GitHub —"},
     copyCmd: {vi:"Copy lệnh", en:"Copy command"},
     okOpen:  {vi:"Đang mở GitHub…", en:"Opening GitHub…"},    okL:     {vi:"Đã copy link", en:"Link copied"},
     okCmd:   {vi:"Đã copy lệnh", en:"Command copied"},
@@ -319,6 +331,7 @@ code,.mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:13px}
       el.innerHTML = `<img alt="" src="${window.hubAvatar(el.dataset.seed)}">`; el.classList.add("done"); }); };
   const paintIcons = () => { if (window.lucide) lucide.createIcons({attrs:{"aria-hidden":"true"}}); paintAvatars(); };
   window.addEventListener("hub-avatars-ready", paintAvatars);
+  window.addEventListener("hub-mermaid-ready", () => { const v=$("#mdView"); if (v) paintMermaid(v); });
   const hue = s => [...s].reduce((a,c)=>(a*31+c.charCodeAt(0))>>>0, 7);
   const esc = s => String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
   const tagLabel = k => (TAGS[k]||TAGS.other)[lang];
@@ -399,8 +412,20 @@ code,.mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:13px}
     const ds = $("#ghScope"), span = ds.querySelector("span");
     if (state.coll !== "all") { ds.style.display=""; ds.href=repoOf(state.coll); span.textContent=`${tr("openRepo")}: ${COLL[state.coll][lang]}`; }
     else ds.style.display="none";
-    $("#grid").innerHTML = list.length ? list.map(cardHTML).join("")
-      : `<div class="empty">${ic("search-x")}${esc(tr("empty"))}</div>`;
+    curList = list; shown = 0;
+    if (!list.length){ $("#grid").innerHTML = `<div class="empty">${ic("search-x")}${esc(tr("empty"))}</div>`; $("#sentinel").style.display="none"; paintIcons(); return; }
+    $("#grid").innerHTML = "";
+    appendBatch();
+  }
+
+  const BATCH = 30; let curList = [], shown = 0;
+  function appendBatch(){
+    const slice = curList.slice(shown, shown + BATCH);
+    if (!slice.length){ $("#sentinel").style.display="none"; return; }
+    $("#grid").insertAdjacentHTML("beforeend", slice.map(cardHTML).join(""));
+    shown += slice.length;
+    $("#sentinel").style.display = shown < curList.length ? "" : "none";
+    paintIcons();   // vẽ icon + avatar cho các thẻ vừa thêm
   }
 
   function cardHTML(it){
@@ -433,15 +458,35 @@ code,.mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:13px}
   let tt; function toast(m){ const t=$("#toast"); t.textContent=m; t.classList.add("show"); clearTimeout(tt); tt=setTimeout(()=>t.classList.remove("show"),1800); }
   async function copy(text,msg){ try{ await navigator.clipboard.writeText(text); toast(msg);}catch{ toast("Ctrl/Cmd+C"); } }
 
+  // Render giải thích: giữ chữ + sơ đồ (Mermaid vẽ thành hình, ASCII giữ nguyên), CẮT khối code có ngôn ngữ.
+  function mdTheme(){ const t=document.documentElement.dataset.theme||(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"); return t==="dark"?"dark":"default"; }
+  let _mmid=0;
   function renderMd(src){
     if (!window.marked) return `<pre>${esc(src)}</pre>`;
-    const body = src.replace(/^---\n[\s\S]*?\n---\n/, "");
-    const html = marked.parse(body,{gfm:true});
+    let body = src.replace(/^---\n[\s\S]*?\n---\n/, "");
+    const mer=[];
+    body = body.replace(/```mermaid[ \t]*\n([\s\S]*?)```/g, (_,c)=>{ mer.push(c.replace(/\s+$/,"")); return `\n\n@@MER${mer.length-1}@@\n\n`; });
+    body = body.replace(/```[ \t]*[A-Za-z0-9_+-]+[ \t]*\n[\s\S]*?```/g, "\n\n@@CODE@@\n\n"); // code có ngôn ngữ -> bỏ
+    const html = marked.parse(body,{gfm:true});                                             // ``` không ngôn ngữ (ASCII) -> giữ
     const doc = new DOMParser().parseFromString(html,"text/html");
     doc.querySelectorAll("script,iframe,object,embed,style,link").forEach(n=>n.remove());
     doc.querySelectorAll("*").forEach(n=>[...n.attributes].forEach(a=>{ if(/^on/i.test(a.name)||/^\s*javascript:/i.test(a.value)) n.removeAttribute(a.name); }));
+    doc.querySelectorAll("p").forEach(p=>{
+      const t=p.textContent.trim(), m=t.match(/^@@MER(\d+)@@$/);
+      if (m){ const d=doc.createElement("div"); d.className="mermaid"; d.textContent=mer[+m[1]]; p.replaceWith(d); }
+      else if (t==="@@CODE@@"){ const s=doc.createElement("p"); s.className="code-note"; s.textContent=tr("codeNote"); p.replaceWith(s); }
+    });
     doc.querySelectorAll("h2").forEach((h,i)=>h.id="sec-"+i);
     return doc.body.innerHTML;
+  }
+  function paintMermaid(el){
+    if (!window.mermaid) return;
+    try {
+      mermaid.initialize({startOnLoad:false, theme:mdTheme(), securityLevel:"strict", flowchart:{useMaxWidth:true}});
+      const nodes=[...el.querySelectorAll(".mermaid:not([data-processed])")];
+      nodes.forEach(n=>{ if(!n.id) n.id="mmd"+(_mmid++); });
+      if (nodes.length) mermaid.run({nodes});
+    } catch(e){ console.warn("mermaid", e); }
   }
 
   let lastFocus=null, cur=null;
@@ -467,11 +512,22 @@ code,.mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:13px}
       <div class="box"><h4>${tr("how")}</h4><div class="invoke"><code>${esc(it.invoke)}</code>${it.invoke.startsWith("/")?`<button class="btn" id="aCmd">${ic("copy")} ${tr("copyCmd")}</button>`:""}</div>
         <p style="margin-top:8px;font-size:13px;color:var(--muted)">${t["h"+lang[0]]}</p></div>
       <div class="box files"><h4>${tr("files")} (${it.files.length})</h4><ul>${it.files.map(f=>`<li class="mono"><a href="${f.url}" target="_blank" rel="noopener">${ic("file-code")} ${esc(f.path)}</a></li>`).join("")}</ul>
-        <p style="margin:8px 0 0;font-size:12.5px;color:var(--muted)">${tr("openHint")}</p></div>`;
+        <p style="margin:8px 0 0;font-size:12.5px;color:var(--muted)">${tr("openHint")}</p></div>
+      ${it.toc.length?`<div class="box toc"><h4>${tr("toc")}</h4><ul>${it.toc.map((h,i)=>`<li><a href="#sec-${i}" data-sec="${i}">${esc(h)}</a></li>`).join("")}</ul></div>`:""}
+      <div class="box"><h4>${tr("flow")}</h4>
+        ${multi?`<div class="ftabs" id="ftabs">${it.files.map((f,i)=>`<button aria-pressed="${i===0}" data-f="${i}">${esc(f.path.split("/").pop())}</button>`).join("")}</div>`:""}
+        <div class="md" id="mdView">${renderMd(it.files[0].content)}</div></div>`;
     paintIcons();
+    paintMermaid($("#mdView"));
     $("#dClose").onclick = close;
     $("#aLink").onclick = () => copy(it.url, tr("okL"));
     const ac=$("#aCmd"); if (ac) ac.onclick = () => copy(it.invoke, tr("okCmd"));
+    const ft=$("#ftabs"); if (ft) ft.onclick = e => { const b=e.target.closest("[data-f]"); if(!b) return;
+      ft.querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",String(x===b)));
+      $("#mdView").innerHTML = renderMd(it.files[+b.dataset.f].content); paintIcons(); paintMermaid($("#mdView")); };
+    $("#dBody").querySelectorAll("[data-sec]").forEach(a=>a.onclick = e => { e.preventDefault();
+      const fb=$("#ftabs"); if (fb && fb.querySelector('[aria-pressed="true"]').dataset.f!=="0") fb.querySelector('[data-f="0"]').click();
+      const el=document.getElementById("sec-"+a.dataset.sec); if (el) el.scrollIntoView({behavior:"smooth",block:"start"}); });
     $("#dBody").scrollTop = 0;
     $("#drawer").classList.add("open"); $("#scrim").classList.add("open");
     $("#drawer").setAttribute("aria-hidden","false"); document.body.style.overflow="hidden";
@@ -516,6 +572,11 @@ code,.mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:13px}
       else if (!e.shiftKey && document.activeElement===f[f.length-1]) { e.preventDefault(); f[0].focus(); }
     }
   });
+
+  // Infinite scroll: nạp thêm thẻ khi cuộn tới gần cuối
+  const io = new IntersectionObserver(es => { if (es.some(e=>e.isIntersecting) && shown < curList.length) appendBatch(); },
+    { root:null, rootMargin:"600px 0px", threshold:0 });
+  io.observe($("#sentinel"));
 
   document.documentElement.lang = lang;
   applyLang();

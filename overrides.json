@@ -310,5 +310,9 @@
   "mcp-reference-readme": {
     "vi": "Giới thiệu bộ MCP Starter Kit: dùng để làm gì và bắt đầu ra sao.",
     "en": "Overview of the MCP Starter Kit: what it's for and how to start."
+  },
+  "master-command-business-flow": {
+    "vi": "Gõ /business-flow để biến yêu cầu bằng lời của người không rành kỹ thuật thành bản mô tả quy trình nghiệp vụ chuẩn (tiếng Việt) cho dev, tester và AI làm theo.",
+    "en": "Type /business-flow to turn a non-technical person's plain request into a standard business-process spec that devs, testers and AIs can follow."
   }
 }

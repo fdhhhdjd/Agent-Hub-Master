@@ -44,7 +44,7 @@ TAG_RULES = [
     ("backend",   ["rabbitmq","payment","sepay","naming","folder","software"]),
     ("frontend",  ["frontend","responsive","animation","animations","ui","diagram","apple","emil","vocabulary","design"]),
     ("quality",   ["unit","tests","qa","review","testing"]),
-    ("product",   ["build","spec","project","manager","plan","plans","achitecture","architecture","oss","seo","obsidian","patterns","modular","placement","entry"]),
+    ("product",   ["build","spec","project","manager","plan","plans","achitecture","architecture","oss","seo","obsidian","patterns","modular","placement","entry","business","flow"]),
 ]
 
 # --- 2 bộ nguồn
