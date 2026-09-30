@@ -467,7 +467,7 @@ code,.mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:13px}
       (state.type==="all" || i.type===state.type) &&
       (state.access==="all" || i.access===state.access) &&
       (!state.tag || i.tags.includes(state.tag)) &&
-      (!state.q || (i.title+" "+i.slug+" "+i.desc+" "+i.group+" "+i.tags.map(tagLabel).join(" ")).toLowerCase().includes(state.q)));
+      (!state.q || (i.title+" "+descOf(i)).toLowerCase().includes(state.q)));
   }
 
   function render(){
