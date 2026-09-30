@@ -84,6 +84,27 @@ footer.credit a:hover{color:var(--accent)}
 .btn.primary:hover{filter:brightness(1.08)}
 .icon-btn{width:38px;height:38px;padding:0;justify-content:center}
 #sentinel{height:1px}
+.seg{display:inline-flex;gap:2px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:3px}
+.seg button{border:0;background:none;padding:7px 10px;border-radius:7px;font-size:13px;color:var(--muted);display:inline-flex;align-items:center;gap:5px;white-space:nowrap}
+.seg button .i{width:14px;height:14px}
+.seg button .n{font-size:11px;background:var(--hover);padding:0 5px;border-radius:99px}
+.seg button[aria-pressed="true"]{background:var(--accent-soft);color:var(--accent);font-weight:600}
+.chip.acc-public{background:color-mix(in srgb,#10b981 16%,transparent);color:#059669;font-weight:600}
+.chip.acc-private{background:color-mix(in srgb,#f59e0b 20%,transparent);color:#b45309;font-weight:600}
+:root[data-theme="dark"] .chip.acc-private{color:#f0b357}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .chip.acc-private{color:#f0b357}}
+.chip.cmd{font-family:"JetBrains Mono",monospace;background:var(--code-bg);color:var(--ink)}
+mark.hl{background:color-mix(in srgb,#f59e0b 45%,transparent);color:inherit;border-radius:3px;padding:0 2px;font-weight:600}
+input[type=search].on{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.note-lock{margin:8px 0 0;font-size:12.5px;color:#b45309;display:flex;gap:6px;align-items:center}
+.note-lock .i{width:14px;height:14px;flex:none}
+.kv{list-style:none;padding:0;margin:0;display:grid;gap:7px}
+.kv li{display:flex;gap:8px;align-items:center;font-size:13.5px;flex-wrap:wrap}
+.kv li .i{width:15px;height:15px;color:var(--faint);flex:none}
+.rel{display:flex;flex-wrap:wrap;gap:6px}
+.rel button{border:1px solid var(--line);background:var(--panel);border-radius:99px;padding:5px 11px;font-size:12.5px;display:inline-flex;gap:5px;align-items:center;max-width:100%}
+.rel button .i{width:13px;height:13px;color:var(--accent);flex:none}
+.rel button:hover{background:var(--hover);border-color:var(--accent)}
 .lang{width:auto;padding:0 12px;font-weight:600;font-size:13px;gap:5px}
 .btn:focus-visible,.card:focus-visible,.tab:focus-visible,.pill:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 
@@ -217,6 +238,7 @@ code,.mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:13px}
     <div class="pills" id="colls" role="group" aria-label="Bộ"></div>
     <div class="row2">
       <div class="tabs" role="tablist" id="tabs"></div>
+      <div class="seg" id="accSeg" role="group" aria-label="Public / Private"></div>
       <select id="tagSel" aria-label="Chủ đề"></select>
       <input type="search" id="q" aria-label="Tìm kiếm">
       <a class="btn hide-sm" id="ghScope" target="_blank" rel="noopener"><i data-lucide="external-link" class="i"></i> <span></span></a>
@@ -281,6 +303,17 @@ code,.mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:13px}
     openFiles:{vi:"Mở file trên GitHub", en:"Open files on GitHub"},
     openHint:{vi:"Bấm đường dẫn để đọc/tải nội dung đầy đủ trên GitHub.", en:"Click a path to read/get the full content on GitHub."},
     flow:    {vi:"Luồng & giải thích", en:"Flow & explanation"},
+    metaT:   {vi:"Thông tin", en:"Details"},
+    setL:    {vi:"Bộ", en:"Set"},
+    author:  {vi:"Tác giả", en:"Author"},
+    version: {vi:"Phiên bản", en:"Version"},
+    read:    {vi:"Đọc khoảng", en:"Read time"},
+    minU:    {vi:"phút", en:"min"},
+    words:   {vi:"từ", en:"words"},
+    related: {vi:"Liên quan", en:"Related"},
+    access:  {vi:"Truy cập", en:"Access"},
+    accAll:  {vi:"Tất cả", en:"All"},
+    privateNote:{vi:"Repo riêng tư — chỉ lớp / người có quyền mới mở được link GitHub.", en:"Private repo — only the class / authorized users can open the GitHub links."},
     codeNote:{vi:"— đoạn code, xem đầy đủ trên GitHub —", en:"— code block, see full source on GitHub —"},
     copyCmd: {vi:"Copy lệnh", en:"Copy command"},
     okOpen:  {vi:"Đang mở GitHub…", en:"Opening GitHub…"},    okL:     {vi:"Đã copy link", en:"Link copied"},
@@ -320,10 +353,16 @@ code,.mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:13px}
     mcp:    {vi:"Xây MCP riêng", en:"MCP Starter Kit", icon:"plug"},
   };
 
+  const ACC = {
+    public:  {vi:"Công khai", en:"Public",  icon:"globe", cls:"acc-public"},
+    private: {vi:"Nội bộ lớp", en:"Class-only", icon:"lock",  cls:"acc-private"},
+  };
+  const accWord = a => a==="public" ? "Public" : "Private";
+  const accTip  = a => ACC[a][lang];
   let lang = (() => { try { return localStorage.getItem("hub.lang") || "vi"; } catch { return "vi"; } })();
   const tr = k => (T[k] || {})[lang] || k;
   const items = D.items;
-  const state = {coll:"all", type:"all", tag:"", q:""};
+  const state = {coll:"all", type:"all", tag:"", q:"", access:"all"};
 
   const ic = (n, cls="i") => `<i data-lucide="${n}" class="${cls}"></i>`;
   const paintAvatars = () => { if (!window.hubAvatar) return;
@@ -339,6 +378,13 @@ code,.mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:13px}
   const typeLabel = t => TYPES[t][lang];
   const groupLabel = g => (GROUPS[g]||{vi:g,en:g})[lang];
   const iconFor = it => ic(it.type==="start" ? "rocket" : tagIcon(it.tags[0]));
+  function hl(text){
+    const t = esc(text);
+    const q = state.q.trim();
+    if (!q) return t;
+    try { return t.replace(new RegExp("("+q.replace(/[.*+?^${}()|[\]\\]/g,"\\$&")+")","gi"), "<mark class=\"hl\">$1</mark>"); }
+    catch { return t; }
+  }
   const descOf = it => (it.simple && it.simple[lang]) || it.desc;
 
   try { const th = localStorage.getItem("hub.theme"); if (th) document.documentElement.dataset.theme = th; } catch {}
@@ -359,7 +405,7 @@ code,.mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:13px}
     $("#ghAll").href = repoOf(state.coll);
     document.querySelectorAll("[data-t]").forEach(el => el.textContent = tr(el.dataset.t));
     $("#q").placeholder = tr("search");
-    buildGuide(); buildColls(); buildTabs(); buildTags(); render(); paintIcons();
+    buildGuide(); buildColls(); buildTabs(); buildAcc(); buildTags(); render(); paintIcons();
   }
 
   function buildGuide(){
@@ -383,6 +429,15 @@ code,.mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:13px}
       ["start","agent","command","skill","rule","reference"].filter(k=>c[k]).map(k =>
         `<button class="tab" role="tab" data-type="${k}" aria-selected="${state.type===k}">${ic(TYPES[k].icon)} ${typeLabel(k)}<span class="n">${c[k]}</span></button>`).join("");
   }
+  function buildAcc(){
+    const c = scoped().reduce((a,i)=>(a[i.access]=(a[i.access]||0)+1,a),{});
+    const opts = [["all", tr("accAll")], ["public","Public"], ["private","Private"]];
+    $("#accSeg").innerHTML = opts.map(([k,lab])=>{
+      const n = k==="all" ? scoped().length : (c[k]||0);
+      const icn = k==="all" ? ic("layout-list") : ic(ACC[k].icon);
+      return `<button data-acc="${k}" aria-pressed="${state.access===k}" title="${k==="all"?tr("accAll"):accTip(k)}">${icn} ${lab}${n?` <span class="n">${n}</span>`:""}</button>`;
+    }).join("");
+  }
   function buildTags(){
     const present = [...new Set(scoped().flatMap(i=>i.tags))];
     const order = Object.keys(TAGS).filter(k=>present.includes(k));
@@ -391,14 +446,17 @@ code,.mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:13px}
   }
 
   $("#colls").onclick = e => { const b=e.target.closest("[data-coll]"); if(!b) return;
-    state.coll=b.dataset.coll; state.type="all"; state.tag=""; buildColls(); buildTabs(); buildTags(); render(); paintIcons(); };
+    state.coll=b.dataset.coll; state.type="all"; state.tag=""; state.access="all"; buildColls(); buildTabs(); buildAcc(); buildTags(); render(); paintIcons(); };
   $("#tabs").onclick = e => { const b=e.target.closest(".tab"); if(!b) return; state.type=b.dataset.type; render(); paintIcons(); };
+  $("#accSeg").onclick = e => { const b=e.target.closest("[data-acc]"); if(!b) return; state.access=b.dataset.acc;
+    document.querySelectorAll("#accSeg button").forEach(x=>x.setAttribute("aria-pressed",String(x.dataset.acc===state.access))); render(); paintIcons(); };
   $("#tagSel").onchange = e => { state.tag=e.target.value; render(); paintIcons(); };
-  $("#q").oninput = e => { state.q=e.target.value.trim().toLowerCase(); render(); paintIcons(); };
+  $("#q").oninput = e => { state.q=e.target.value.trim().toLowerCase(); e.target.classList.toggle("on", !!state.q); render(); paintIcons(); };
 
   function filtered(){
     return scoped().filter(i =>
       (state.type==="all" || i.type===state.type) &&
+      (state.access==="all" || i.access===state.access) &&
       (!state.tag || i.tags.includes(state.tag)) &&
       (!state.q || (i.title+" "+i.slug+" "+i.desc+" "+i.group+" "+i.tags.map(tagLabel).join(" ")).toLowerCase().includes(state.q)));
   }
@@ -431,6 +489,8 @@ code,.mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:13px}
   function cardHTML(it){
     const t = TYPES[it.type], h1=hue(it.slug)%360;
     const extra = [];
+    extra.push(`<span class="chip ${ACC[it.access].cls}" title="${accTip(it.access)}">${ic(ACC[it.access].icon)} ${accWord(it.access)}</span>`);
+    if (it.invoke && it.invoke.startsWith("/")) extra.push(`<span class="chip cmd">${esc(it.invoke.split(" ")[0])}</span>`);
     if (it.group) extra.push(`<span class="chip src">${esc(groupLabel(it.group))}</span>`);
     it.tags.slice(0,2).forEach(g=>extra.push(`<span class="chip">${ic(tagIcon(g))} ${esc(tagLabel(g))}</span>`));
     if (it.files.length>1) extra.push(`<span class="chip">${ic("folder")} ${it.files.length}</span>`);
@@ -440,8 +500,8 @@ code,.mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:13px}
       aria-label="${esc(it.title)}">
       <a class="dl-mini" href="${it.url}" target="_blank" rel="noopener" title="${tr('openGH')}" aria-label="${shortName}">${ic("external-link")}</a>
       <div class="av-wrap"><div class="av" data-seed="${esc(it.source+'/'+it.slug)}">${iconFor(it)}</div><span class="av-badge" title="${typeLabel(it.type)}">${ic(t.icon)}</span></div>
-      <h3>${esc(it.title)}</h3>
-      <p>${esc(descOf(it))}</p>
+      <h3>${hl(it.title)}</h3>
+      <p>${hl(descOf(it))}</p>
       <div class="meta"><span class="chip type">${ic(t.icon)} ${typeLabel(it.type)}</span>${extra.join("")}</div>
     </div>`;
   }
@@ -489,6 +549,12 @@ code,.mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:13px}
     } catch(e){ console.warn("mermaid", e); }
   }
 
+  function relatedBox(it){
+    const rel = items.filter(x => x.id!==it.id && (x.tags[0]===it.tags[0] || (it.group && x.group===it.group))).slice(0,8);
+    if (!rel.length) return "";
+    return `<div class="box"><h4>${tr("related")}</h4><div class="rel">${rel.map(x=>
+      `<button data-rel="${x.id}" title="${esc(x.title)}">${ic(TYPES[x.type].icon)} ${esc((x.simple&&x.simple[lang]?x.title:x.title).slice(0,42))}</button>`).join("")}</div></div>`;
+  }
   let lastFocus=null, cur=null;
   function open(id, push=true){
     const it = items.find(i=>i.id===id); if(!it) return;
@@ -499,7 +565,7 @@ code,.mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:13px}
     $("#dHead").innerHTML = `<div class="av" data-seed="${esc(it.source+'/'+it.slug)}" style="--tc:${t.color}">${iconFor(it)}</div>
       <div style="min-width:0"><h2 id="dTitle">${esc(it.title)}</h2>
       <div class="meta" style="padding:0"><span class="chip type" style="--tc:${t.color}">${ic(t.icon)} ${typeLabel(it.type)} · ${t["w"+lang[0]]}</span>
-      <span class="chip src">${ic(COLL[it.source].icon)} ${COLL[it.source][lang]}</span>${groupChip}
+      <span class="chip src">${ic(COLL[it.source].icon)} ${COLL[it.source][lang]}</span><span class="chip ${ACC[it.access].cls}" title="${accTip(it.access)}">${ic(ACC[it.access].icon)} ${accWord(it.access)}</span>${groupChip}
       ${it.tags.map(g=>`<span class="chip">${ic(tagIcon(g))} ${esc(tagLabel(g))}</span>`).join("")}</div></div>
       <button class="d-close" id="dClose" aria-label="Đóng">${ic("x")}</button>`;
     const multi = it.files.length>1;
@@ -511,8 +577,16 @@ code,.mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:13px}
       <div class="box"><h4>${tr("use")}</h4><p>${esc(descOf(it))}</p>${it.motto?`<p class="motto">“${esc(it.motto)}”</p>`:""}</div>
       <div class="box"><h4>${tr("how")}</h4><div class="invoke"><code>${esc(it.invoke)}</code>${it.invoke.startsWith("/")?`<button class="btn" id="aCmd">${ic("copy")} ${tr("copyCmd")}</button>`:""}</div>
         <p style="margin-top:8px;font-size:13px;color:var(--muted)">${t["h"+lang[0]]}</p></div>
+      <div class="box"><h4>${tr("metaT")}</h4><ul class="kv">
+        <li>${ic(COLL[it.source].icon)} <span><b>${tr("setL")}:</b> ${COLL[it.source][lang]}</span> <span class="chip ${ACC[it.access].cls}" title="${accTip(it.access)}">${ic(ACC[it.access].icon)} ${accWord(it.access)}</span></li>
+        ${it.group?`<li>${ic("folder-tree")} <span><b>${tr("access")==="Access"?"Group":"Nhóm"}:</b> ${esc(groupLabel(it.group))}</span></li>`:""}
+        ${it.meta&&it.meta.author?`<li>${ic("user-round")} <span><b>${tr("author")}:</b> ${esc(it.meta.author)}</span></li>`:""}
+        ${it.meta&&it.meta.version?`<li>${ic("tag")} <span><b>${tr("version")}:</b> ${esc(it.meta.version)}</span></li>`:""}
+        <li>${ic("clock")} <span><b>${tr("read")}:</b> ~${it.readmin} ${tr("minU")} · ${it.words.toLocaleString(lang==="vi"?"vi":"en")} ${tr("words")}</span></li>
+      </ul></div>
+      ${relatedBox(it)}
       <div class="box files"><h4>${tr("files")} (${it.files.length})</h4><ul>${it.files.map(f=>`<li class="mono"><a href="${f.url}" target="_blank" rel="noopener">${ic("file-code")} ${esc(f.path)}</a></li>`).join("")}</ul>
-        <p style="margin:8px 0 0;font-size:12.5px;color:var(--muted)">${tr("openHint")}</p></div>
+        <p style="margin:8px 0 0;font-size:12.5px;color:var(--muted)">${tr("openHint")}</p>${it.access==="private"?`<p class="note-lock">${ic("lock")} ${tr("privateNote")}</p>`:""}</div>
       ${it.toc.length?`<div class="box toc"><h4>${tr("toc")}</h4><ul>${it.toc.map((h,i)=>`<li><a href="#sec-${i}" data-sec="${i}">${esc(h)}</a></li>`).join("")}</ul></div>`:""}
       <div class="box"><h4>${tr("flow")}</h4>
         ${multi?`<div class="ftabs" id="ftabs">${it.files.map((f,i)=>`<button aria-pressed="${i===0}" data-f="${i}">${esc(f.path.split("/").pop())}</button>`).join("")}</div>`:""}
@@ -528,6 +602,7 @@ code,.mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:13px}
     $("#dBody").querySelectorAll("[data-sec]").forEach(a=>a.onclick = e => { e.preventDefault();
       const fb=$("#ftabs"); if (fb && fb.querySelector('[aria-pressed="true"]').dataset.f!=="0") fb.querySelector('[data-f="0"]').click();
       const el=document.getElementById("sec-"+a.dataset.sec); if (el) el.scrollIntoView({behavior:"smooth",block:"start"}); });
+    $("#dBody").querySelectorAll("[data-rel]").forEach(bn=>bn.onclick=()=>open(bn.dataset.rel));
     $("#dBody").scrollTop = 0;
     $("#drawer").classList.add("open"); $("#scrim").classList.add("open");
     $("#drawer").setAttribute("aria-hidden","false"); document.body.style.overflow="hidden";

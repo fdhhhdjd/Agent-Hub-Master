@@ -28,6 +28,9 @@ REPO = {
     "mcp": "https://github.com/fdhhhdjd/MCP-STARTER-KIT",
 }
 BLOB = {k: v + "/blob/main/" for k, v in REPO.items()}
+# Public = ai cũng mở link được; Private = repo riêng, chỉ lớp/người có quyền mới xem.
+# (Trạng thái repo GitHub 2026-09-30 — cập nhật nếu đổi public/private.)
+ACCESS = {"master": "private", "secops": "private", "mcp": "public"}
 OVERRIDES = json.loads((HUB / "overrides.json").read_text(encoding="utf-8")) if (HUB / "overrides.json").exists() else {}
 SECOPS_VI = json.loads((HUB / "secops-vi.json").read_text(encoding="utf-8")) if (HUB / "secops-vi.json").exists() else {}
 
@@ -157,6 +160,14 @@ def make_item(kind, source, slug, main, base, extra=(), invoke="", group=""):
     file_objs = [{"path": disp_path(f, base), "url": BLOB[source] + disp_path(f, base),
                   "content": f.read_text(encoding="utf-8")} for f in files]
     item_id = f"{source}-{kind}-{slug}".replace("/", "-")
+    meta = {}
+    fmraw = re.match(r"^---\n(.*?)\n---", text, re.S)
+    if fmraw:
+        for mk in ("author", "version"):
+            mm = re.search(rf"^\s*{mk}:\s*\"?([^\"\n]+)", fmraw.group(1), re.M)
+            if mm:
+                meta[mk] = mm.group(1).strip().strip('"')
+    words = sum(len(f["content"].split()) for f in file_objs)
     return {
         "id": item_id,
         "type": kind,
@@ -170,9 +181,13 @@ def make_item(kind, source, slug, main, base, extra=(), invoke="", group=""):
         "invoke": invoke,
         "simple": OVERRIDES.get(item_id, {}),
         "url": file_objs[0]["url"],
+        "repo": REPO[source],
+        "access": ACCESS[source],
+        "meta": meta,
         "toc": headings(body),
         "files": file_objs,
-        "words": sum(len(f["content"].split()) for f in file_objs),
+        "words": words,
+        "readmin": max(1, round(words / 200)),
     }
 
 
