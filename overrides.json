@@ -308,8 +308,8 @@
     "en": "A template MCP codebase to copy: runs Streamable HTTP + stdio, authenticated by API key + scopes."
   },
   "mcp-reference-readme": {
-    "vi": "Giới thiệu bộ MCP Starter Kit: dùng để làm gì và bắt đầu ra sao.",
-    "en": "Overview of the MCP Starter Kit: what it's for and how to start."
+    "vi": "Tổng quan MCP Starter Kit: dựng MCP server bảo mật, online nối AI (Claude, ChatGPT) với API backend của bạn qua URL + API key + scope.",
+    "en": "MCP Starter Kit overview: build a secure, online MCP server that bridges AI (Claude, ChatGPT) to your backend API via URL + API key + scopes."
   },
   "master-command-business-flow": {
     "vi": "Gõ /business-flow để biến yêu cầu bằng lời của người không rành kỹ thuật thành bản mô tả quy trình nghiệp vụ chuẩn (tiếng Việt) cho dev, tester và AI làm theo.",
