@@ -195,17 +195,12 @@ def outline_flow(toc):
     heads = [h for h in (_mnode(x) for x in toc) if h]
     if len(heads) < 3:
         return None
-    more = len(heads) > 7
     heads = heads[:7]
     out = ["flowchart TD"]
     for i, h in enumerate(heads):
         out.append("  n%d[\"%d· %s\"]" % (i, i + 1, h))
-    if more:
-        out.append("  nx[\"…\"]")
     for i in range(len(heads) - 1):
         out.append("  n%d --> n%d" % (i, i + 1))
-    if more:
-        out.append("  n%d --> nx" % (len(heads) - 1))
     return {"type": "mermaid", "code": chr(10).join(out), "auto": True}
 
 
