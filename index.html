@@ -571,8 +571,7 @@ code,.mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:13px}
   const fab = $("#toTop");
   addEventListener("scroll", () => fab.classList.toggle("show", scrollY > 560), {passive:true});
   fab.onclick = () => scrollTo({top:0, behavior:"smooth"});
-  // Reveal thẻ khi cuộn tới (cảm giác lướt mượt)
-  window.cardIo = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting){ e.target.classList.add("in"); cardIo.unobserve(e.target); } }), {rootMargin:"0px 0px -30px 0px"});
+
   $("#genDate").textContent = "· " + D.generated;
 
   function applyLang(){
@@ -701,7 +700,8 @@ code,.mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:13px}
     shown += slice.length;
     $("#sentinel").style.display = shown < curList.length ? "" : "none";
     paintIcons();   // vẽ icon + avatar cho các thẻ vừa thêm
-    $("#grid").querySelectorAll(".card:not(.in)").forEach(c=>window.cardIo && cardIo.observe(c));
+    const fresh=[...$("#grid").querySelectorAll(".card:not(.in)")];
+    fresh.forEach((c,i)=>{ c.style.transitionDelay=(Math.min(i,10)*32)+"ms"; requestAnimationFrame(()=>requestAnimationFrame(()=>c.classList.add("in"))); });
   }
 
   function cardHTML(it){
