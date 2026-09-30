@@ -124,6 +124,13 @@ input[type=search].on{border-color:var(--accent);box-shadow:0 0 0 3px var(--acce
 .pill .n{font-size:11px;background:var(--hover);padding:0 6px;border-radius:99px}
 .pill[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
 .pill[aria-pressed="true"] .n{background:rgba(255,255,255,.22)}
+.acc-tag{display:inline-flex;align-items:center;gap:3px;font-size:10.5px;font-weight:700;padding:1px 6px;border-radius:99px;line-height:1.6}
+.acc-tag .i{width:11px;height:11px}
+.acc-tag.acc-public{background:color-mix(in srgb,#10b981 18%,transparent);color:#059669}
+.acc-tag.acc-private{background:color-mix(in srgb,#f59e0b 22%,transparent);color:#b45309}
+.pill[aria-pressed="true"] .acc-tag{background:rgba(255,255,255,.24);color:#fff}
+:root[data-theme="dark"] .acc-tag.acc-private{color:#f0b357}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .acc-tag.acc-private{color:#f0b357}}
 .row2{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
 .tabs{display:flex;gap:4px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:4px;overflow-x:auto;max-width:100%}
 .tab{border:0;background:none;padding:6px 11px;border-radius:8px;font-size:13px;color:var(--muted);white-space:nowrap;display:flex;align-items:center;gap:6px}
@@ -417,8 +424,10 @@ code,.mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:13px}
     const c = items.reduce((a,i)=>(a[i.source]=(a[i.source]||0)+1,a),{});
     $("#colls").innerHTML =
       `<button class="pill" data-coll="all" aria-pressed="${state.coll==='all'}">${ic("layout-grid")} ${tr("allColl")} <span class="n">${items.length}</span></button>` +
-      Object.entries(COLL).filter(([k])=>c[k]).map(([k,v]) =>
-        `<button class="pill" data-coll="${k}" aria-pressed="${state.coll===k}">${ic(v.icon)} ${v[lang]} <span class="n">${c[k]}</span></button>`).join("");
+      Object.entries(COLL).filter(([k])=>c[k]).map(([k,v]) => {
+        const a = (items.find(i=>i.source===k)||{}).access || "private";
+        return `<button class="pill" data-coll="${k}" aria-pressed="${state.coll===k}">${ic(v.icon)} ${v[lang]} <span class="n">${c[k]}</span> <span class="acc-tag ${ACC[a].cls}" title="${accTip(a)}">${ic(ACC[a].icon)} ${accWord(a)}</span></button>`;
+      }).join("");
   }
   function scoped(){ return items.filter(i => state.coll==="all" || i.source===state.coll); }
   function buildTabs(){
