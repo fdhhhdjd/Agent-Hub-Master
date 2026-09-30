@@ -81,6 +81,13 @@ footer.credit a:hover{color:var(--accent)}
 .btn:hover{background:var(--hover)}
 .btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
 .btn.primary:hover{filter:brightness(1.08)}
+.btn.course{background:linear-gradient(100deg,#e11d48,#7c3aed);border:0;color:#fff;font-weight:600}
+.btn.course:hover{filter:brightness(1.08)}
+.btn.course .i{width:16px;height:16px}
+.fab{position:fixed;right:16px;bottom:calc(18px + env(safe-area-inset-bottom));width:46px;height:46px;border-radius:50%;background:var(--accent);color:#fff;border:0;display:grid;place-items:center;box-shadow:0 8px 22px rgba(20,24,40,.28);opacity:0;pointer-events:none;transform:translateY(10px) scale(.9);transition:opacity .25s,transform .25s;z-index:15}
+.fab .i{width:22px;height:22px}
+.fab.show{opacity:1;pointer-events:auto;transform:none}
+@media (prefers-reduced-motion:reduce){ .card{opacity:1 !important;transform:none !important} }
 .icon-btn{width:38px;height:38px;padding:0;justify-content:center}
 #sentinel{height:1px}
 .seg{display:inline-flex;gap:2px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:3px}
@@ -102,7 +109,10 @@ footer.credit a:hover{color:var(--accent)}
 .outline li span{min-inline-size:0;overflow-wrap:anywhere}
 .flowbox .mermaid{margin:4px 0 10px;overflow-x:auto;text-align:center;background:var(--hover);border:1px solid var(--line);border-radius:10px;padding:10px}
 .flowbox .mermaid svg{max-width:100%;height:auto}
-.flowbox pre.ascii{margin:4px 0 10px;overflow-x:auto;background:var(--code-bg);border:1px solid var(--line);border-radius:10px;padding:11px 13px;font-family:"JetBrains Mono",monospace;font-size:11.5px;line-height:1.5;white-space:pre;color:var(--ink)}
+.flowbox pre.ascii{margin:4px 0 10px;overflow-x:auto;overscroll-behavior-inline:contain;background:linear-gradient(180deg,hsl(var(--fh,210) 60% 97% / .6),var(--code-bg));border:1px solid hsl(var(--fh,210) 50% 82%);border-left:3px solid hsl(var(--fh,210) 65% 55%);border-radius:10px;padding:11px 13px;font-family:"JetBrains Mono",monospace;font-size:11.5px;line-height:1.5;white-space:pre;color:var(--ink)}
+:root[data-theme="dark"] .flowbox pre.ascii{background:var(--code-bg);border-color:hsl(var(--fh,210) 40% 34%)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .flowbox pre.ascii{background:var(--code-bg);border-color:hsl(var(--fh,210) 40% 34%)}}
+.flowbox .mermaid{border-color:hsl(var(--fh,210) 45% 82%)}
 mark.hl{background:color-mix(in srgb,#f59e0b 45%,transparent);color:inherit;border-radius:3px;padding:0 2px;font-weight:600}
 input[type=search].on{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
 .note-lock{margin:8px 0 0;font-size:12.5px;color:var(--muted);display:flex;gap:6px;align-items:center}
@@ -189,7 +199,7 @@ input[type=search].on{border-color:var(--accent);box-shadow:0 0 0 3px var(--acce
 /* toolbar */
 .toolbar{position:sticky;top:0;z-index:5;background:var(--bg);padding:10px 0 12px;margin-bottom:6px;display:flex;flex-direction:column;gap:10px}
 .pills{display:flex;gap:6px;flex-wrap:wrap}
-.pill{border:1px solid var(--line);background:var(--panel);border-radius:99px;padding:6px 14px;font-size:13px;color:var(--muted);display:inline-flex;align-items:center;gap:6px}
+.pill{border:1px solid var(--line);background:var(--panel);border-radius:99px;padding:6px 14px;font-size:13px;color:var(--muted);display:inline-flex;align-items:center;gap:6px;white-space:nowrap;flex:none}
 .pill .n{font-size:11px;background:var(--hover);padding:0 6px;border-radius:99px}
 .pill[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
 .pill[aria-pressed="true"] .n{background:rgba(255,255,255,.22)}
@@ -208,11 +218,17 @@ input[type=search].on{border-color:var(--accent);box-shadow:0 0 0 3px var(--acce
 select,input[type=search]{font:inherit;font-size:14px;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:8px 12px}
 input[type=search]{flex:1;min-width:160px}
 .count{font-size:13px;color:var(--muted);margin:0 0 12px}
+.morefilters{display:contents}
+.btn.filt{display:none;gap:6px}
+.btn.filt .i{width:16px;height:16px}
 
 /* grid */
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(250px,100%),1fr));gap:14px}
 .card{position:relative;overflow:hidden;text-align:left;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:14px 16px 14px;display:flex;flex-direction:column;gap:6px;min-height:196px;transition:transform .15s,box-shadow .15s,border-color .15s}
-.card:hover{transform:translateY(-2px);box-shadow:var(--shadow);border-color:color-mix(in srgb,var(--tc) 45%,var(--line))}
+.card{opacity:0;transform:translateY(16px)}
+.card.in{opacity:1;transform:none;transition:opacity .45s ease,transform .5s cubic-bezier(.2,.85,.3,1)}
+.card:hover{transform:translateY(-3px);box-shadow:var(--shadow);border-color:color-mix(in srgb,var(--tc) 45%,var(--line))}
+.card:active{transform:scale(.985)}
 .card::before{content:"";position:absolute;inset:0 0 auto 0;height:72px;pointer-events:none;
   background:radial-gradient(18px 18px at var(--b1x,20%) 34%,hsl(var(--h1) 80% 70% / .40),transparent 70%),
              radial-gradient(22px 22px at var(--b2x,68%) 60%,hsl(var(--h2) 80% 70% / .34),transparent 70%),
@@ -271,7 +287,34 @@ code,.mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:13px}
 .ab-list li{display:flex;gap:8px;align-items:flex-start;font-size:14px}
 .ab-list li .i{width:16px;height:16px;color:var(--accent);margin-top:2px;flex:none}
 .ab-close{position:absolute;top:15px;right:15px;border:0;background:var(--hover);width:32px;height:32px;border-radius:9px;display:grid;place-items:center}
-@media (max-width:640px){ .brand-name{font-size:20px} .logo-ring,.brand .logo{width:46px;height:46px} .hide-sm{display:none} .toolbar{top:0} }
+@media (max-width:720px){
+  .wrap{padding:14px 12px 60px}
+  header.top{gap:8px 8px;margin-bottom:12px}
+  .brand-name{font-size:18px}
+  .logo-ring,.brand .logo{width:40px;height:40px}
+  .brand-txt small{font-size:11px}
+  .intro-link span[data-t]{display:none}   /* Giới thiệu -> chỉ icon */
+  .intro-link{padding:8px}
+  .btn.course span,.btn.primary#ghAll span{font-size:13px}
+  .toolbar{top:0;padding:8px 0 10px;gap:8px}
+  .pills,.tabs{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+  .pills::-webkit-scrollbar,.tabs::-webkit-scrollbar{display:none}
+  .pill{padding:6px 11px;font-size:12.5px}
+  .row2{gap:8px}
+  .btn.filt{display:inline-flex}
+  .morefilters{display:none;flex-basis:100%;gap:8px}
+  .morefilters.open{display:flex;flex-wrap:wrap}
+  .morefilters .seg,.morefilters #tagSel{flex:1;min-width:130px}
+  input[type=search]{flex:1;min-width:120px}
+  .pill{padding:5px 10px;font-size:12px}
+  .pill .acc-tag{display:none}
+  .g{padding:12px}
+  .fold-h{padding:8px 2px 10px}
+  .fold-htx small{display:none}          /* header phụ ẩn để gọn */
+  .count{margin-bottom:8px}
+  .hide-sm{display:none}
+}
+@media (max-width:460px){ .brand-name{font-size:17px} .brand-txt small{display:none} .btn.course span{display:none} .btn.course{padding:8px 11px} }
 @media (max-width:380px){ .brand-name{font-size:18px} }
 @media (prefers-reduced-motion:reduce){ *{transition:none !important} .brand-name,.logo-ring::before{animation:none !important} }
 </style>
@@ -290,6 +333,7 @@ code,.mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:13px}
       <button class="intro-link" id="toggleGuide" aria-expanded="true"><i data-lucide="info" class="i"></i> <span data-t="intro"></span></button>
       <button class="btn icon-btn lang" id="langBtn" title="Ngôn ngữ / Language"><i data-lucide="languages" class="i"></i><span id="langLbl">VI</span></button>
       <button class="btn icon-btn" id="themeBtn" aria-label="Sáng/Tối"><i data-lucide="sun-moon" class="i"></i></button>
+      <a class="btn course" id="courseBtn"><i data-lucide="graduation-cap" class="i"></i> <span data-t="course"></span></a>
       <a class="btn primary" id="ghAll" target="_blank" rel="noopener"><i data-lucide="github" class="i"></i> <span data-t="viewGH"></span></a>
     </div>
   </header>
@@ -301,9 +345,12 @@ code,.mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:13px}
     <div class="pills" id="colls" role="group" aria-label="Bộ"></div>
     <div class="row2">
       <div class="tabs" role="tablist" id="tabs"></div>
-      <div class="seg" id="accSeg" role="group" aria-label="Public / Private"></div>
-      <select id="tagSel" aria-label="Chủ đề"></select>
       <input type="search" id="q" aria-label="Tìm kiếm">
+      <button class="btn filt" id="filtBtn" aria-expanded="false"><i data-lucide="sliders-horizontal" class="i"></i> <span data-t="filter"></span></button>
+      <div class="morefilters" id="moreFilters">
+        <div class="seg" id="accSeg" role="group" aria-label="Public / Private"></div>
+        <select id="tagSel" aria-label="Chủ đề"></select>
+      </div>
       <a class="btn hide-sm" id="ghScope" target="_blank" rel="noopener"><i data-lucide="external-link" class="i"></i> <span></span></a>
     </div>
   </div>
@@ -320,6 +367,7 @@ code,.mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:13px}
   <a href="https://github.com/fdhhhdjd/MCP-STARTER-KIT" target="_blank" rel="noopener">MCP-STARTER-KIT ↗</a>
 </footer>
 
+<button id="toTop" class="fab" aria-label="Lên đầu"><i data-lucide="arrow-up" class="i"></i></button>
 <div class="scrim" id="aScrim"></div>
 <div class="about" id="about" role="dialog" aria-modal="true" aria-labelledby="aboutTitle" aria-hidden="true">
   <button class="ab-close" id="aboutClose" aria-label="Đóng"></button>
@@ -348,6 +396,9 @@ code,.mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:13px}
     aboutSteps:{vi:["Lọc theo bộ, loại hoặc chủ đề; hoặc gõ phím / để tìm.","Bấm một thẻ để xem: dùng để làm gì, cách dùng, danh sách file.","Bấm ‘Mở trên GitHub’ để đọc hoặc tải file gốc.","Đổi VI/EN và sáng/tối ở góc trên phải."], en:["Filter by set, type or topic; or press / to search.","Click a card to see: what it does, how to use, its files.","Click ‘Open on GitHub’ to read or get the source file.","Toggle VI/EN and light/dark at the top right."]},
     footerNote:{vi:"bộ agent, skill & tài liệu dùng lại cho mọi dự án.", en:"reusable agents, skills & docs for any project."},
     viewGH:  {vi:"Xem trên GitHub", en:"View on GitHub"},
+    course:  {vi:"Khoá học", en:"Course"},
+    filter:  {vi:"Lọc", en:"Filter"},
+    courseSoon:{vi:"Khoá học sắp mở — inbox Code Web Không Khó để giữ chỗ nhé!", en:"Course opening soon — message Code Web Không Khó to reserve a spot!"},
     allTypes:{vi:"Tất cả", en:"All"},
     allColl: {vi:"Tất cả các bộ", en:"All sets"},
     allTags: {vi:"Mọi chủ đề", en:"All topics"},
@@ -449,6 +500,7 @@ code,.mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:13px}
   const tr = k => (T[k] || {})[lang] || k;
   const items = D.items;
   const state = {coll:"all", type:"all", tag:"", q:"", access:"all"};
+  const COURSE_URL = "";   // <-- dán link đăng ký khoá học vào đây; để trống sẽ hiện lời nhắn
 
   const ic = (n, cls="i") => `<i data-lucide="${n}" class="${cls}"></i>`;
   const paintAvatars = () => { if (!window.hubAvatar) return;
@@ -461,7 +513,20 @@ code,.mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:13px}
   function paintMermaid(el){
     if (!window.mermaid || !el) return;
     try {
-      mermaid.initialize({startOnLoad:false, theme:mdTheme(), securityLevel:"strict", flowchart:{useMaxWidth:true}});
+      const dark = mdTheme()==="dark";
+      const H = +(el.dataset.hue||210);
+      mermaid.initialize({ startOnLoad:false, securityLevel:"strict", theme:"base",
+        themeVariables:{
+          fontFamily:'"Be Vietnam Pro",system-ui,sans-serif', fontSize:"13px",
+          primaryColor: dark?`hsl(${H} 42% 22%)`:`hsl(${H} 78% 96%)`,
+          primaryBorderColor:`hsl(${H} 65% ${dark?"58%":"52%"})`,
+          primaryTextColor: dark?"#e8eaf0":"#1d2129",
+          lineColor:`hsl(${H} 55% ${dark?"60%":"52%"})`,
+          secondaryColor: dark?`hsl(${(H+40)%360} 42% 24%)`:`hsl(${(H+40)%360} 78% 95%)`,
+          tertiaryColor: dark?"#1e222b":"#f3f4f7",
+          clusterBkg: dark?"#1a1d25":"#f7f8fb", clusterBorder:`hsl(${H} 40% ${dark?"40%":"78%"})`
+        },
+        flowchart:{ useMaxWidth:true, curve:"basis", htmlLabels:true, padding:10 } });
       const nodes=[...el.querySelectorAll(".mermaid:not([data-processed])")];
       nodes.forEach(n=>{ if(!n.id) n.id="mmd"+(_mmid++); });
       if (nodes.length) mermaid.run({nodes});
@@ -500,6 +565,14 @@ code,.mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:13px}
 
   const repoOf = c => D.repos[c==="all"?"master":c];
   $("#ghAll").href = D.repos.master;
+  if (COURSE_URL) { $("#courseBtn").href = COURSE_URL; $("#courseBtn").target = "_blank"; $("#courseBtn").rel = "noopener"; }
+  else { $("#courseBtn").onclick = (e)=>{ e.preventDefault(); toast(tr("courseSoon")); }; }
+  // FAB lên đầu
+  const fab = $("#toTop");
+  addEventListener("scroll", () => fab.classList.toggle("show", scrollY > 560), {passive:true});
+  fab.onclick = () => scrollTo({top:0, behavior:"smooth"});
+  // Reveal thẻ khi cuộn tới (cảm giác lướt mượt)
+  window.cardIo = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting){ e.target.classList.add("in"); cardIo.unobserve(e.target); } }), {rootMargin:"0px 0px -30px 0px"});
   $("#genDate").textContent = "· " + D.generated;
 
   function applyLang(){
@@ -591,6 +664,7 @@ code,.mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:13px}
   $("#colls").onclick = e => { const b=e.target.closest("[data-coll]"); if(!b) return;
     state.coll=b.dataset.coll; state.type="all"; state.tag=""; state.access="all"; buildColls(); buildTabs(); buildAcc(); buildTags(); render(); paintIcons(); };
   $("#tabs").onclick = e => { const b=e.target.closest(".tab"); if(!b) return; state.type=b.dataset.type; render(); paintIcons(); };
+  $("#filtBtn").onclick = () => { const mf=$("#moreFilters"); const open=mf.classList.toggle("open"); $("#filtBtn").setAttribute("aria-expanded",String(open)); };
   $("#accSeg").onclick = e => { const b=e.target.closest("[data-acc]"); if(!b) return; state.access=b.dataset.acc;
     document.querySelectorAll("#accSeg button").forEach(x=>x.setAttribute("aria-pressed",String(x.dataset.acc===state.access))); render(); paintIcons(); };
   $("#tagSel").onchange = e => { state.tag=e.target.value; render(); paintIcons(); };
@@ -627,6 +701,7 @@ code,.mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:13px}
     shown += slice.length;
     $("#sentinel").style.display = shown < curList.length ? "" : "none";
     paintIcons();   // vẽ icon + avatar cho các thẻ vừa thêm
+    $("#grid").querySelectorAll(".card:not(.in)").forEach(c=>window.cardIo && cardIo.observe(c));
   }
 
   function cardHTML(it){
@@ -695,7 +770,7 @@ code,.mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:13px}
         <p class="note-lock">${ic("graduation-cap")} ${tr("outlineNote")}</p></div>`:""}
       <div class="box"><h4>${tr("how")}</h4><div class="invoke"><code>${esc(it.invoke)}</code>${it.invoke.startsWith("/")?`<button class="btn" id="aCmd">${ic("copy")} ${tr("copyCmd")}</button>`:""}</div>
         <p style="margin-top:8px;font-size:13px;color:var(--muted)">${t["h"+lang[0]]}</p></div>
-      ${it.flows&&it.flows.length?`<div class="box flowbox"><h4>${ic("git-branch-plus")} ${tr("flowTitle")}</h4><div id="flowView">${renderFlows(it.flows)}</div><p class="note-lock">${ic("graduation-cap")} ${tr("flowNote")}</p></div>`:""}
+      ${it.flows&&it.flows.length?`<div class="box flowbox"><h4>${ic("git-branch-plus")} ${tr("flowTitle")}</h4><div id="flowView" data-hue="${hue(it.slug)%360}" style="--fh:${hue(it.slug)%360}">${renderFlows(it.flows)}</div><p class="note-lock">${ic("graduation-cap")} ${tr("flowNote")}</p></div>`:""}
       <div class="box"><h4>${tr("metaT")}</h4><ul class="kv">
         <li>${ic(COLL[it.source].icon)} <span><b>${tr("setL")}:</b> ${COLL[it.source][lang]}</span> <span class="chip ${ACC[it.access].cls}" title="${accTip(it.access)}">${ic(ACC[it.access].icon)} ${accWord(it.access)}</span></li>
         ${it.group?`<li>${ic("folder-tree")} <span><b>${tr("access")==="Access"?"Group":"Nhóm"}:</b> ${esc(groupLabel(it.group))}</span></li>`:""}
