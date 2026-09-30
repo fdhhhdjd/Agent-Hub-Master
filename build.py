@@ -152,6 +152,24 @@ def tags_for(key):
     return tags or ["other"]
 
 
+_DIAG = set("─│┌└├┐┘┼►▼▲◄→←↓↑╱╲╭╮╯╰═╔╗╚╝")
+def extract_flows(text):
+    """Chỉ lấy SƠ ĐỒ (mermaid + ascii có nét vẽ) — bỏ chữ/code chi tiết."""
+    flows = []
+    def _m(m):
+        flows.append({"type": "mermaid", "code": m.group(1).strip()})
+        return ""
+    rest = re.sub(r"```mermaid[ \t]*\n(.*?)```", _m, text, flags=re.S)
+    for m in re.finditer(r"```[^\n]*\n(.*?)```", rest, re.S):
+        body = m.group(1).rstrip()
+        if any(c in body for c in _DIAG):            # phải có nét vẽ sơ đồ
+            lines = body.split("\n")
+            if len(lines) > 40:                        # cắt bớt sơ đồ quá dài
+                body = "\n".join(lines[:40]) + "\n…"
+            flows.append({"type": "ascii", "code": body})
+    return flows[:3]                                   # tối đa 3 sơ đồ / mục
+
+
 def make_item(kind, source, slug, main, base, extra=(), invoke="", group=""):
     text = main.read_text(encoding="utf-8")
     fm, body = split_frontmatter(text)
@@ -184,6 +202,7 @@ def make_item(kind, source, slug, main, base, extra=(), invoke="", group=""):
         "access": ACCESS[source],
         "meta": meta,
         "toc": [],
+        "flows": extract_flows(text),
         "files": file_objs,
         "words": words,
         "readmin": max(1, round(words / 200)),

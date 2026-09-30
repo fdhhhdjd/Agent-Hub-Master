@@ -18,6 +18,11 @@
     window.hubAvatar = seed => cache.get(seed) || (cache.set(seed, createAvatar(notionists, { seed, radius: 50 }).toDataUri()), cache.get(seed));
     window.dispatchEvent(new Event("hub-avatars-ready"));
   } catch (e) { console.warn("Avatar library unavailable, using icons", e); }
+  try {
+    const m = await import("https://cdn.jsdelivr.net/npm/mermaid@11.4.1/dist/mermaid.esm.min.mjs");
+    window.mermaid = m.default;
+    window.dispatchEvent(new Event("hub-mermaid-ready"));
+  } catch (e) { console.warn("Mermaid unavailable", e); }
 </script>
 <style>
 :root{
@@ -88,6 +93,10 @@ footer.credit a:hover{color:var(--accent)}
 :root[data-theme="dark"] .chip.acc-private{color:#f0b357}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .chip.acc-private{color:#f0b357}}
 .chip.cmd{font-family:"JetBrains Mono",monospace;background:var(--code-bg);color:var(--ink)}
+.chip.flowc{background:color-mix(in srgb,var(--accent) 14%,transparent);color:var(--accent);font-weight:600}
+.flowbox .mermaid{margin:4px 0 10px;overflow-x:auto;text-align:center;background:var(--hover);border:1px solid var(--line);border-radius:10px;padding:10px}
+.flowbox .mermaid svg{max-width:100%;height:auto}
+.flowbox pre.ascii{margin:4px 0 10px;overflow-x:auto;background:var(--code-bg);border:1px solid var(--line);border-radius:10px;padding:11px 13px;font-family:"JetBrains Mono",monospace;font-size:11.5px;line-height:1.5;white-space:pre;color:var(--ink)}
 mark.hl{background:color-mix(in srgb,#f59e0b 45%,transparent);color:inherit;border-radius:3px;padding:0 2px;font-weight:600}
 input[type=search].on{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
 .note-lock{margin:8px 0 0;font-size:12.5px;color:var(--muted);display:flex;gap:6px;align-items:center}
@@ -352,6 +361,9 @@ code,.mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:13px}
     openHint:{vi:"Bấm đường dẫn để đọc/tải nội dung đầy đủ trên GitHub.", en:"Click a path to read/get the full content on GitHub."},
     flow:    {vi:"Luồng & giải thích", en:"Flow & explanation"},
     metaT:   {vi:"Thông tin", en:"Details"},
+    flowTitle:{vi:"Luồng tổng quan", en:"Flow overview"},
+    flowNote:{vi:"Sơ đồ tổng quan quy trình — hướng dẫn chi tiết từng bước có trong khoá học.", en:"High-level process diagram — step-by-step guidance is inside the course."},
+    flowChip:{vi:"Có sơ đồ", en:"Diagram"},
     setL:    {vi:"Bộ", en:"Set"},
     author:  {vi:"Tác giả", en:"Author"},
     version: {vi:"Phiên bản", en:"Version"},
@@ -434,6 +446,23 @@ code,.mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:13px}
       el.innerHTML = `<img alt="" src="${window.hubAvatar(el.dataset.seed)}">`; el.classList.add("done"); }); };
   const paintIcons = () => { if (window.lucide) lucide.createIcons({attrs:{"aria-hidden":"true"}}); paintAvatars(); };
   window.addEventListener("hub-avatars-ready", paintAvatars);
+  const mdTheme = () => (document.documentElement.dataset.theme || (matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"))==="dark" ? "dark" : "default";
+  let _mmid=0;
+  function paintMermaid(el){
+    if (!window.mermaid || !el) return;
+    try {
+      mermaid.initialize({startOnLoad:false, theme:mdTheme(), securityLevel:"strict", flowchart:{useMaxWidth:true}});
+      const nodes=[...el.querySelectorAll(".mermaid:not([data-processed])")];
+      nodes.forEach(n=>{ if(!n.id) n.id="mmd"+(_mmid++); });
+      if (nodes.length) mermaid.run({nodes});
+    } catch(e){ console.warn("mermaid", e); }
+  }
+  function renderFlows(flows){
+    return flows.map(f => f.type==="mermaid"
+      ? `<div class="mermaid">${f.code.replace(/</g,"&lt;")}</div>`
+      : `<pre class="ascii">${esc(f.code)}</pre>`).join("");
+  }
+  window.addEventListener("hub-mermaid-ready", ()=>{ const v=document.querySelector("#flowView"); if(v) paintMermaid(v); });
   const hue = s => [...s].reduce((a,c)=>(a*31+c.charCodeAt(0))>>>0, 7);
   const esc = s => String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
   const tagLabel = k => (TAGS[k]||TAGS.other)[lang];
@@ -490,7 +519,7 @@ code,.mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:13px}
         <span><span class="lg-c"></span> ${tr("sdlcLeg3")}</span>
       </div></div>`;
     $("#sdlc").querySelectorAll("[data-agent]").forEach(b=>b.onclick=()=>open(b.dataset.agent));
-    applyFold($("#sdlc"), "sdlc");
+    applyFold($("#sdlc"), "sdlc", false);
     if (sdlcSeen) $("#sdlc").classList.add("in");
   }
   let sdlcSeen=false;
@@ -498,9 +527,10 @@ code,.mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:13px}
   function foldHeader(icon, title, sub, shine){
     return `<button class="fold-h" aria-expanded="true"><span class="fold-htx"><b>${ic(icon)} <span class="${shine?"ttl":""}">${title}</span></b><small>${sub}</small></span><i class="fold-chev" data-lucide="chevron-down" aria-hidden="true"></i></button>`;
   }
-  function applyFold(sec, key){
+  function applyFold(sec, key, desktopOpen){
     let open;
-    try { const v=localStorage.getItem("hub.fold."+key); open = v===null ? !mobileNow() : v==="1"; } catch { open=!mobileNow(); }
+    const def = mobileNow() ? false : desktopOpen;   // mobile: đóng; desktop: theo desktopOpen
+    try { const v=localStorage.getItem("hub.fold."+key); open = v===null ? def : v==="1"; } catch { open=def; }
     sec.classList.toggle("folded", !open);
     const h=sec.querySelector(".fold-h"); h.setAttribute("aria-expanded", String(open));
     h.onclick = () => { const nowOpen = sec.classList.contains("folded"); sec.classList.toggle("folded", !nowOpen);
@@ -512,7 +542,7 @@ code,.mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:13px}
        <div class="g-tx"><b>${t[lang]} · ${t["w"+lang[0]]}</b><span>${t["h"+lang[0]]}</span></div></div>`).join("");
     $("#gwrap").innerHTML = foldHeader("layout-grid", tr("typesTitle"), tr("typesSub")) +
       `<div class="fold-b"><div class="guide in">${cards}</div></div>`;
-    applyFold($("#gwrap"), "guide");
+    applyFold($("#gwrap"), "guide", true);
   }
   function buildColls(){
     const c = items.reduce((a,i)=>(a[i.source]=(a[i.source]||0)+1,a),{});
@@ -594,6 +624,7 @@ code,.mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:13px}
     const extra = [];
     extra.push(`<span class="chip ${ACC[it.access].cls}" title="${accTip(it.access)}">${ic(ACC[it.access].icon)} ${accWord(it.access)}</span>`);
     if (it.invoke && it.invoke.startsWith("/")) extra.push(`<span class="chip cmd">${esc(it.invoke.split(" ")[0])}</span>`);
+    if (it.flows && it.flows.length) extra.push(`<span class="chip flowc">${ic("git-branch-plus")} ${tr("flowChip")}</span>`);
     if (it.group) extra.push(`<span class="chip src">${esc(groupLabel(it.group))}</span>`);
     it.tags.slice(0,2).forEach(g=>extra.push(`<span class="chip">${ic(tagIcon(g))} ${esc(tagLabel(g))}</span>`));
     if (it.files.length>1) extra.push(`<span class="chip">${ic("folder")} ${it.files.length}</span>`);
@@ -650,6 +681,7 @@ code,.mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:13px}
       <div class="box"><h4>${tr("use")}</h4><p>${esc(descOf(it))}</p>${it.motto?`<p class="motto">“${esc(it.motto)}”</p>`:""}</div>
       <div class="box"><h4>${tr("how")}</h4><div class="invoke"><code>${esc(it.invoke)}</code>${it.invoke.startsWith("/")?`<button class="btn" id="aCmd">${ic("copy")} ${tr("copyCmd")}</button>`:""}</div>
         <p style="margin-top:8px;font-size:13px;color:var(--muted)">${t["h"+lang[0]]}</p></div>
+      ${it.flows&&it.flows.length?`<div class="box flowbox"><h4>${ic("git-branch-plus")} ${tr("flowTitle")}</h4><div id="flowView">${renderFlows(it.flows)}</div><p class="note-lock">${ic("graduation-cap")} ${tr("flowNote")}</p></div>`:""}
       <div class="box"><h4>${tr("metaT")}</h4><ul class="kv">
         <li>${ic(COLL[it.source].icon)} <span><b>${tr("setL")}:</b> ${COLL[it.source][lang]}</span> <span class="chip ${ACC[it.access].cls}" title="${accTip(it.access)}">${ic(ACC[it.access].icon)} ${accWord(it.access)}</span></li>
         ${it.group?`<li>${ic("folder-tree")} <span><b>${tr("access")==="Access"?"Group":"Nhóm"}:</b> ${esc(groupLabel(it.group))}</span></li>`:""}
@@ -661,6 +693,7 @@ code,.mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:13px}
       <div class="box files"><h4>${tr("files")} (${it.files.length})</h4><ul>${it.files.map(f=>`<li class="mono"><a href="${f.url}" target="_blank" rel="noopener">${ic("file-code")} ${esc(f.path)}</a></li>`).join("")}</ul>
         <p class="note-lock ${it.access==="private"?"lock":""}">${ic(it.access==="private"?"lock":"github")} ${it.access==="private"?tr("privateNote"):tr("openHint")}</p></div>`;
     paintIcons();
+    paintMermaid($("#flowView"));
     $("#dClose").onclick = close;
     $("#aLink").onclick = () => copy(it.url, tr("okL"));
     const ac=$("#aCmd"); if (ac) ac.onclick = () => copy(it.invoke, tr("okCmd"));
