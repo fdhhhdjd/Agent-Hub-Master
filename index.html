@@ -117,6 +117,10 @@ mark.hl{background:color-mix(in srgb,#f59e0b 45%,transparent);color:inherit;bord
 input[type=search].on{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
 .note-lock{margin:8px 0 0;font-size:12.5px;color:var(--muted);display:flex;gap:6px;align-items:center}
 .note-lock.lock{color:#b45309}
+.note-cta{color:var(--accent);text-decoration:none;font-weight:600;background:color-mix(in srgb,var(--accent) 8%,transparent);border:1px solid color-mix(in srgb,var(--accent) 28%,transparent);border-radius:10px;padding:9px 12px !important;justify-content:flex-start}
+.note-cta span{flex:1}
+.note-cta:hover{background:color-mix(in srgb,var(--accent) 15%,transparent)}
+.note-cta .i:last-child{margin-left:auto}
 .note-lock .i{width:14px;height:14px;flex:none}
 .kv{list-style:none;padding:0;margin:0;display:grid;gap:7px}
 .kv li{display:flex;gap:8px;align-items:center;font-size:13.5px;flex-wrap:wrap}
@@ -396,9 +400,9 @@ code,.mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:13px}
     aboutSteps:{vi:["Lọc theo bộ, loại hoặc chủ đề; hoặc gõ phím / để tìm.","Bấm một thẻ để xem: dùng để làm gì, cách dùng, danh sách file.","Bấm ‘Mở trên GitHub’ để đọc hoặc tải file gốc.","Đổi VI/EN và sáng/tối ở góc trên phải."], en:["Filter by set, type or topic; or press / to search.","Click a card to see: what it does, how to use, its files.","Click ‘Open on GitHub’ to read or get the source file.","Toggle VI/EN and light/dark at the top right."]},
     footerNote:{vi:"bộ agent, skill & tài liệu dùng lại cho mọi dự án.", en:"reusable agents, skills & docs for any project."},
     viewGH:  {vi:"Xem trên GitHub", en:"View on GitHub"},
-    course:  {vi:"Khoá học", en:"Course"},
+    course:  {vi:"Lộ trình", en:"Roadmap"},
     filter:  {vi:"Lọc", en:"Filter"},
-    courseSoon:{vi:"Khoá học sắp mở — inbox Code Web Không Khó để giữ chỗ nhé!", en:"Course opening soon — message Code Web Không Khó to reserve a spot!"},
+    courseSoon:{vi:"Xem lộ trình học tại Code Web Không Khó!", en:"See the learning roadmap at Code Web Không Khó!"},
     allTypes:{vi:"Tất cả", en:"All"},
     allColl: {vi:"Tất cả các bộ", en:"All sets"},
     allTags: {vi:"Mọi chủ đề", en:"All topics"},
@@ -419,10 +423,10 @@ code,.mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:13px}
     flow:    {vi:"Luồng & giải thích", en:"Flow & explanation"},
     metaT:   {vi:"Thông tin", en:"Details"},
     flowTitle:{vi:"Luồng tổng quan", en:"Flow overview"},
-    flowNote:{vi:"Sơ đồ tổng quan quy trình — hướng dẫn chi tiết từng bước có trong khoá học.", en:"High-level process diagram — step-by-step guidance is inside the course."},
+    flowNote:{vi:"Sơ đồ tổng quan quy trình — hướng dẫn chi tiết từng bước có trong lộ trình học.", en:"High-level process diagram — step-by-step guidance is in the learning roadmap."},
     flowChip:{vi:"Có sơ đồ", en:"Diagram"},
     outlineTitle:{vi:"Tổng quan nội dung", en:"What's inside"},
-    outlineNote:{vi:"Đây là các phần trong tài liệu — nội dung chi tiết từng phần có trong khoá học.", en:"These are the sections — full step-by-step detail is inside the course."},
+    outlineNote:{vi:"Đây là các phần trong tài liệu — nội dung chi tiết từng phần có trong lộ trình học.", en:"These are the sections — full step-by-step detail is in the learning roadmap."},
     sectionsU:{vi:"phần", en:"sections"},
     diagramsU:{vi:"sơ đồ", en:"diagrams"},
     setL:    {vi:"Bộ", en:"Set"},
@@ -500,7 +504,7 @@ code,.mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:13px}
   const tr = k => (T[k] || {})[lang] || k;
   const items = D.items;
   const state = {coll:"all", type:"all", tag:"", q:"", access:"all"};
-  const COURSE_URL = "";   // <-- dán link đăng ký khoá học vào đây; để trống sẽ hiện lời nhắn
+  const COURSE_URL = "https://lms-codewebkhongkho.com/pricing";   // Lộ trình học
 
   const ic = (n, cls="i") => `<i data-lucide="${n}" class="${cls}"></i>`;
   const paintAvatars = () => { if (!window.hubAvatar) return;
@@ -532,6 +536,9 @@ code,.mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:13px}
       if (nodes.length) mermaid.run({nodes});
     } catch(e){ console.warn("mermaid", e); }
   }
+  const courseNote = (txt) => COURSE_URL
+    ? `<a class="note-lock note-cta" href="${COURSE_URL}" target="_blank" rel="noopener">${ic("graduation-cap")} <span>${txt}</span> ${ic("arrow-right")}</a>`
+    : `<p class="note-lock">${ic("graduation-cap")} ${txt}</p>`;
   function renderFlows(flows){
     return flows.map(f => f.type==="mermaid"
       ? `<div class="mermaid">${f.code.replace(/</g,"&lt;")}</div>`
@@ -767,10 +774,10 @@ code,.mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:13px}
       ${it.toc&&it.toc.length?`<div class="box"><h4>${tr("outlineTitle")}</h4>
         <div class="stat">${ic("list-tree")} ${it.toc.length} ${tr("sectionsU")}${it.flows&&it.flows.length?` · ${ic("git-branch-plus")} ${it.flows.length} ${tr("diagramsU")}`:""} · ${ic("clock")} ~${it.readmin} ${tr("minU")} · ${it.words.toLocaleString(lang==="vi"?"vi":"en")} ${tr("words")}</div>
         <ul class="outline">${it.toc.map(h=>`<li>${ic("check")} <span>${esc(h)}</span></li>`).join("")}</ul>
-        <p class="note-lock">${ic("graduation-cap")} ${tr("outlineNote")}</p></div>`:""}
+        ${courseNote(tr("outlineNote"))}</div>`:""}
       <div class="box"><h4>${tr("how")}</h4><div class="invoke"><code>${esc(it.invoke)}</code>${it.invoke.startsWith("/")?`<button class="btn" id="aCmd">${ic("copy")} ${tr("copyCmd")}</button>`:""}</div>
         <p style="margin-top:8px;font-size:13px;color:var(--muted)">${t["h"+lang[0]]}</p></div>
-      ${it.flows&&it.flows.length?`<div class="box flowbox"><h4>${ic("git-branch-plus")} ${tr("flowTitle")}</h4><div id="flowView" data-hue="${hue(it.slug)%360}" style="--fh:${hue(it.slug)%360}">${renderFlows(it.flows)}</div><p class="note-lock">${ic("graduation-cap")} ${tr("flowNote")}</p></div>`:""}
+      ${it.flows&&it.flows.length?`<div class="box flowbox"><h4>${ic("git-branch-plus")} ${tr("flowTitle")}</h4><div id="flowView" data-hue="${hue(it.slug)%360}" style="--fh:${hue(it.slug)%360}">${renderFlows(it.flows)}</div>${courseNote(tr("flowNote"))}</div>`:""}
       <div class="box"><h4>${tr("metaT")}</h4><ul class="kv">
         <li>${ic(COLL[it.source].icon)} <span><b>${tr("setL")}:</b> ${COLL[it.source][lang]}</span> <span class="chip ${ACC[it.access].cls}" title="${accTip(it.access)}">${ic(ACC[it.access].icon)} ${accWord(it.access)}</span></li>
         ${it.group?`<li>${ic("folder-tree")} <span><b>${tr("access")==="Access"?"Group":"Nhóm"}:</b> ${esc(groupLabel(it.group))}</span></li>`:""}
