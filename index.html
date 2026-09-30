@@ -94,6 +94,12 @@ footer.credit a:hover{color:var(--accent)}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .chip.acc-private{color:#f0b357}}
 .chip.cmd{font-family:"JetBrains Mono",monospace;background:var(--code-bg);color:var(--ink)}
 .chip.flowc{background:color-mix(in srgb,var(--accent) 14%,transparent);color:var(--accent);font-weight:600}
+.stat{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12.5px;color:var(--muted);margin-bottom:11px;align-items:center}
+.stat .i{width:14px;height:14px;color:var(--accent);flex:none}
+.outline{list-style:none;padding:0;margin:0;columns:2 210px;column-gap:20px}
+.outline li{break-inside:avoid;font-size:13px;margin:5px 0;display:flex;gap:7px;align-items:flex-start;line-height:1.4}
+.outline li .i{width:15px;height:15px;color:var(--accent);flex:none;margin-top:2px}
+.outline li span{min-inline-size:0;overflow-wrap:anywhere}
 .flowbox .mermaid{margin:4px 0 10px;overflow-x:auto;text-align:center;background:var(--hover);border:1px solid var(--line);border-radius:10px;padding:10px}
 .flowbox .mermaid svg{max-width:100%;height:auto}
 .flowbox pre.ascii{margin:4px 0 10px;overflow-x:auto;background:var(--code-bg);border:1px solid var(--line);border-radius:10px;padding:11px 13px;font-family:"JetBrains Mono",monospace;font-size:11.5px;line-height:1.5;white-space:pre;color:var(--ink)}
@@ -364,6 +370,10 @@ code,.mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:13px}
     flowTitle:{vi:"Luồng tổng quan", en:"Flow overview"},
     flowNote:{vi:"Sơ đồ tổng quan quy trình — hướng dẫn chi tiết từng bước có trong khoá học.", en:"High-level process diagram — step-by-step guidance is inside the course."},
     flowChip:{vi:"Có sơ đồ", en:"Diagram"},
+    outlineTitle:{vi:"Tổng quan nội dung", en:"What's inside"},
+    outlineNote:{vi:"Đây là các phần trong tài liệu — nội dung chi tiết từng phần có trong khoá học.", en:"These are the sections — full step-by-step detail is inside the course."},
+    sectionsU:{vi:"phần", en:"sections"},
+    diagramsU:{vi:"sơ đồ", en:"diagrams"},
     setL:    {vi:"Bộ", en:"Set"},
     author:  {vi:"Tác giả", en:"Author"},
     version: {vi:"Phiên bản", en:"Version"},
@@ -679,6 +689,10 @@ code,.mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:13px}
         <button class="btn" id="aLink">${ic("link")} ${tr("copyL")}</button>
       </div>
       <div class="box"><h4>${tr("use")}</h4><p>${esc(descOf(it))}</p>${it.motto?`<p class="motto">“${esc(it.motto)}”</p>`:""}</div>
+      ${it.toc&&it.toc.length?`<div class="box"><h4>${tr("outlineTitle")}</h4>
+        <div class="stat">${ic("list-tree")} ${it.toc.length} ${tr("sectionsU")}${it.flows&&it.flows.length?` · ${ic("git-branch-plus")} ${it.flows.length} ${tr("diagramsU")}`:""} · ${ic("clock")} ~${it.readmin} ${tr("minU")} · ${it.words.toLocaleString(lang==="vi"?"vi":"en")} ${tr("words")}</div>
+        <ul class="outline">${it.toc.map(h=>`<li>${ic("check")} <span>${esc(h)}</span></li>`).join("")}</ul>
+        <p class="note-lock">${ic("graduation-cap")} ${tr("outlineNote")}</p></div>`:""}
       <div class="box"><h4>${tr("how")}</h4><div class="invoke"><code>${esc(it.invoke)}</code>${it.invoke.startsWith("/")?`<button class="btn" id="aCmd">${ic("copy")} ${tr("copyCmd")}</button>`:""}</div>
         <p style="margin-top:8px;font-size:13px;color:var(--muted)">${t["h"+lang[0]]}</p></div>
       ${it.flows&&it.flows.length?`<div class="box flowbox"><h4>${ic("git-branch-plus")} ${tr("flowTitle")}</h4><div id="flowView">${renderFlows(it.flows)}</div><p class="note-lock">${ic("graduation-cap")} ${tr("flowNote")}</p></div>`:""}

@@ -214,7 +214,7 @@ def make_item(kind, source, slug, main, base, extra=(), invoke="", group=""):
         "url": file_objs[0]["url"],
         "repo": REPO[source],
         "access": ACCESS[source],
-        "toc": [],
+        "toc": headings(body)[:22],
         "flows": extract_flows(text),
         "files": file_objs,
         "words": words,
