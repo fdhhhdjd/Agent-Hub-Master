@@ -771,13 +771,9 @@ code,.mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:13px}
         <button class="btn" id="aLink">${ic("link")} ${tr("copyL")}</button>
       </div>
       <div class="box"><h4>${tr("use")}</h4><p>${esc(descOf(it))}</p>${it.motto?`<p class="motto">“${esc(it.motto)}”</p>`:""}</div>
-      ${it.toc&&it.toc.length?`<div class="box"><h4>${tr("outlineTitle")}</h4>
-        <div class="stat">${ic("list-tree")} ${it.toc.length} ${tr("sectionsU")}${it.flows&&it.flows.length?` · ${ic("git-branch-plus")} ${it.flows.length} ${tr("diagramsU")}`:""} · ${ic("clock")} ~${it.readmin} ${tr("minU")} · ${it.words.toLocaleString(lang==="vi"?"vi":"en")} ${tr("words")}</div>
-        <ul class="outline">${it.toc.map(h=>`<li>${ic("check")} <span>${esc(h)}</span></li>`).join("")}</ul>
-        ${courseNote(tr("outlineNote"))}</div>`:""}
+      ${it.flows&&it.flows.length?`<div class="box flowbox"><h4>${ic("git-branch-plus")} ${tr("flowTitle")}</h4><div id="flowView" data-hue="${hue(it.slug)%360}" style="--fh:${hue(it.slug)%360}">${renderFlows(it.flows)}</div>${courseNote(tr("flowNote"))}</div>`:""}
       <div class="box"><h4>${tr("how")}</h4><div class="invoke"><code>${esc(it.invoke)}</code>${it.invoke.startsWith("/")?`<button class="btn" id="aCmd">${ic("copy")} ${tr("copyCmd")}</button>`:""}</div>
         <p style="margin-top:8px;font-size:13px;color:var(--muted)">${t["h"+lang[0]]}</p></div>
-      ${it.flows&&it.flows.length?`<div class="box flowbox"><h4>${ic("git-branch-plus")} ${tr("flowTitle")}</h4><div id="flowView" data-hue="${hue(it.slug)%360}" style="--fh:${hue(it.slug)%360}">${renderFlows(it.flows)}</div>${courseNote(tr("flowNote"))}</div>`:""}
       <div class="box"><h4>${tr("metaT")}</h4><ul class="kv">
         <li>${ic(COLL[it.source].icon)} <span><b>${tr("setL")}:</b> ${COLL[it.source][lang]}</span> <span class="chip ${ACC[it.access].cls}" title="${accTip(it.access)}">${ic(ACC[it.access].icon)} ${accWord(it.access)}</span></li>
         ${it.group?`<li>${ic("folder-tree")} <span><b>${tr("access")==="Access"?"Group":"Nhóm"}:</b> ${esc(groupLabel(it.group))}</span></li>`:""}
@@ -785,6 +781,10 @@ code,.mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:13px}
         <li>${ic("clock")} <span><b>${tr("read")}:</b> ~${it.readmin} ${tr("minU")} · ${it.words.toLocaleString(lang==="vi"?"vi":"en")} ${tr("words")}</span></li>
       </ul></div>
       ${relatedBox(it)}
+      ${it.toc&&it.toc.length?`<div class="box"><h4>${tr("outlineTitle")}</h4>
+        <div class="stat">${ic("list-tree")} ${it.toc.length} ${tr("sectionsU")}${it.flows&&it.flows.length?` · ${ic("git-branch-plus")} ${it.flows.length} ${tr("diagramsU")}`:""} · ${ic("clock")} ~${it.readmin} ${tr("minU")} · ${it.words.toLocaleString(lang==="vi"?"vi":"en")} ${tr("words")}</div>
+        <ul class="outline">${it.toc.map(h=>`<li>${ic("check")} <span>${esc(h)}</span></li>`).join("")}</ul>
+        ${courseNote(tr("outlineNote"))}</div>`:""}
       <div class="box files"><h4>${tr("files")} (${it.files.length})</h4><ul>${it.files.map(f=>`<li class="mono"><a href="${f.url}" target="_blank" rel="noopener">${ic("file-code")} ${esc(f.path)}</a></li>`).join("")}</ul>
         <p class="note-lock ${it.access==="private"?"lock":""}">${ic(it.access==="private"?"lock":"github")} ${it.access==="private"?tr("privateNote"):tr("openHint")}</p></div>`;
     paintIcons();
