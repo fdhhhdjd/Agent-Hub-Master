@@ -711,7 +711,16 @@ code,.mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:13px}
   $("#accSeg").onclick = e => { const b=e.target.closest("[data-acc]"); if(!b) return; state.access=b.dataset.acc;
     document.querySelectorAll("#accSeg button").forEach(x=>x.setAttribute("aria-pressed",String(x.dataset.acc===state.access))); render(); paintIcons(); };
   $("#tagSel").onchange = e => { state.tag=e.target.value; render(); paintIcons(); };
-  $("#q").oninput = e => { state.q=e.target.value.trim().toLowerCase(); state.qFold=fold(state.q); e.target.classList.toggle("on", !!state.q); render(); paintIcons(); };
+  let qTimer = null;
+  function runSearch(v){ state.q=v; state.qFold=fold(v); render(); paintIcons(); }
+  $("#q").oninput = e => {
+    const v = e.target.value.trim().toLowerCase();
+    e.target.classList.toggle("on", !!v);
+    clearTimeout(qTimer);
+    if (!v) { runSearch(""); return; }          // xoá hết -> hiện lại ngay
+    qTimer = setTimeout(() => runSearch(v), 220); // gõ xong mới tìm, hết nhảy liên tục
+  };
+  $("#q").onkeydown = e => { if (e.key === "Enter") { clearTimeout(qTimer); runSearch(e.target.value.trim().toLowerCase()); } };
 
   function filtered(){
     // Có từ khoá -> tìm TOÀN BỘ (bỏ qua bộ/loại/chủ đề/access), khớp đầu-từ + xếp hạng
