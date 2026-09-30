@@ -26,6 +26,13 @@ python3 agent-hub/build.py
 Sinh lại `data.js`. Mô tả thẻ lấy tự động từ chính file `.md`; riêng bộ Master có bản mô tả
 đơn giản VI/EN viết tay trong `overrides.json`.
 
+## Bảo vệ nội dung (chống sao chép)
+Trang **KHÔNG nhúng nội dung** đầy đủ của các file — `data.js` chỉ chứa tiêu đề, mô tả ngắn,
+nhãn, đường dẫn + link GitHub. Toàn bộ playbook/nội dung thật nằm trong **repo riêng tư**
+(AI-Agent-Master, AI-Agent-Security-DevOps là Private) nên người ngoài quét trang cũng chỉ lấy
+được phần giới thiệu, không lấy được nội dung để dựng lại. MCP Starter Kit là Public nên nội
+dung của nó vốn đã công khai trên GitHub.
+
 ## Cấu trúc
 | File | Vai trò |
 |---|---|

@@ -7,7 +7,6 @@
 <link rel="icon" type="image/png" href="assets/logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.2/marked.min.js"></script>
 <script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
 <script src="data.js"></script>
 <script type="module">
@@ -19,11 +18,6 @@
     window.hubAvatar = seed => cache.get(seed) || (cache.set(seed, createAvatar(notionists, { seed, radius: 50 }).toDataUri()), cache.get(seed));
     window.dispatchEvent(new Event("hub-avatars-ready"));
   } catch (e) { console.warn("Avatar library unavailable, using icons", e); }
-  try {
-    const m = await import("https://cdn.jsdelivr.net/npm/mermaid@11.4.1/dist/mermaid.esm.min.mjs");
-    window.mermaid = m.default;
-    window.dispatchEvent(new Event("hub-mermaid-ready"));
-  } catch (e) { console.warn("Mermaid unavailable, diagrams shown as text", e); }
 </script>
 <style>
 :root{
@@ -96,7 +90,8 @@ footer.credit a:hover{color:var(--accent)}
 .chip.cmd{font-family:"JetBrains Mono",monospace;background:var(--code-bg);color:var(--ink)}
 mark.hl{background:color-mix(in srgb,#f59e0b 45%,transparent);color:inherit;border-radius:3px;padding:0 2px;font-weight:600}
 input[type=search].on{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
-.note-lock{margin:8px 0 0;font-size:12.5px;color:#b45309;display:flex;gap:6px;align-items:center}
+.note-lock{margin:8px 0 0;font-size:12.5px;color:var(--muted);display:flex;gap:6px;align-items:center}
+.note-lock.lock{color:#b45309}
 .note-lock .i{width:14px;height:14px;flex:none}
 .kv{list-style:none;padding:0;margin:0;display:grid;gap:7px}
 .kv li{display:flex;gap:8px;align-items:center;font-size:13.5px;flex-wrap:wrap}
@@ -250,20 +245,6 @@ code,.mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:13px}
 .toc ul{columns:2 220px;column-gap:20px}
 .toc li{font-size:13px;margin:2px 0;break-inside:avoid;color:var(--muted)}
 .toc li a{color:inherit;text-decoration:none}.toc li a:hover{color:var(--accent);text-decoration:underline}
-.ftabs{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 10px}
-.ftabs button{border:1px solid var(--line);background:var(--panel);border-radius:8px;padding:4px 10px;font-size:12.5px}
-.ftabs button[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--accent);color:var(--accent)}
-.md{font-size:14.5px;overflow-wrap:anywhere}
-.md h1{font-size:21px}.md h2{font-size:18px;margin-top:26px;padding-top:12px;border-top:1px solid var(--line)}.md h3{font-size:15.5px}
-.md pre{background:var(--code-bg);padding:12px 14px;border-radius:10px;overflow-x:auto;overscroll-behavior-inline:contain}
-.md :not(pre)>code{background:var(--code-bg);padding:1px 5px;border-radius:5px}
-.md table{border-collapse:collapse;display:block;overflow-x:auto;max-width:100%;font-size:13px}
-.md th,.md td{border:1px solid var(--line);padding:6px 9px;text-align:left;vertical-align:top}
-.md blockquote{margin:10px 0;padding:6px 14px;border-left:3px solid var(--accent);background:var(--hover);border-radius:0 8px 8px 0;color:var(--muted)}
-.md img{max-width:100%}
-.md .mermaid{margin:12px 0;overflow-x:auto;text-align:center;background:var(--hover);border:1px solid var(--line);border-radius:10px;padding:10px}
-.md .mermaid svg{max-width:100%;height:auto}
-.md .code-note{color:var(--faint);font-style:italic;font-size:12.5px;background:var(--hover);border-radius:8px;padding:6px 10px;margin:8px 0}
 .toast{position:fixed;bottom:calc(20px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:10px;font-size:14px;opacity:0;transition:.2s;z-index:40;pointer-events:none}
 .toast.show{opacity:1;transform:translateX(-50%)}
 .about{position:fixed;z-index:22;top:50%;left:50%;transform:translate(-50%,-46%) scale(.98);opacity:0;pointer-events:none;transition:.2s;width:min(620px,92vw);max-height:86dvh;overflow:auto;overscroll-behavior:contain;background:var(--panel);border:1px solid var(--line);border-radius:18px;box-shadow:0 20px 60px rgba(0,0,0,.28);padding:22px 24px calc(24px + env(safe-area-inset-bottom))}
@@ -453,7 +434,6 @@ code,.mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:13px}
       el.innerHTML = `<img alt="" src="${window.hubAvatar(el.dataset.seed)}">`; el.classList.add("done"); }); };
   const paintIcons = () => { if (window.lucide) lucide.createIcons({attrs:{"aria-hidden":"true"}}); paintAvatars(); };
   window.addEventListener("hub-avatars-ready", paintAvatars);
-  window.addEventListener("hub-mermaid-ready", () => { const v=$("#mdView"); if (v) paintMermaid(v); });
   const hue = s => [...s].reduce((a,c)=>(a*31+c.charCodeAt(0))>>>0, 7);
   const esc = s => String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
   const tagLabel = k => (TAGS[k]||TAGS.other)[lang];
@@ -641,36 +621,6 @@ code,.mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:13px}
   let tt; function toast(m){ const t=$("#toast"); t.textContent=m; t.classList.add("show"); clearTimeout(tt); tt=setTimeout(()=>t.classList.remove("show"),1800); }
   async function copy(text,msg){ try{ await navigator.clipboard.writeText(text); toast(msg);}catch{ toast("Ctrl/Cmd+C"); } }
 
-  // Render giải thích: giữ chữ + sơ đồ (Mermaid vẽ thành hình, ASCII giữ nguyên), CẮT khối code có ngôn ngữ.
-  function mdTheme(){ const t=document.documentElement.dataset.theme||(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"); return t==="dark"?"dark":"default"; }
-  let _mmid=0;
-  function renderMd(src){
-    if (!window.marked) return `<pre>${esc(src)}</pre>`;
-    let body = src.replace(/^---\n[\s\S]*?\n---\n/, "");
-    const mer=[];
-    body = body.replace(/```mermaid[ \t]*\n([\s\S]*?)```/g, (_,c)=>{ mer.push(c.replace(/\s+$/,"")); return `\n\n@@MER${mer.length-1}@@\n\n`; });
-    body = body.replace(/```[ \t]*[A-Za-z0-9_+-]+[ \t]*\n[\s\S]*?```/g, "\n\n@@CODE@@\n\n"); // code có ngôn ngữ -> bỏ
-    const html = marked.parse(body,{gfm:true});                                             // ``` không ngôn ngữ (ASCII) -> giữ
-    const doc = new DOMParser().parseFromString(html,"text/html");
-    doc.querySelectorAll("script,iframe,object,embed,style,link").forEach(n=>n.remove());
-    doc.querySelectorAll("*").forEach(n=>[...n.attributes].forEach(a=>{ if(/^on/i.test(a.name)||/^\s*javascript:/i.test(a.value)) n.removeAttribute(a.name); }));
-    doc.querySelectorAll("p").forEach(p=>{
-      const t=p.textContent.trim(), m=t.match(/^@@MER(\d+)@@$/);
-      if (m){ const d=doc.createElement("div"); d.className="mermaid"; d.textContent=mer[+m[1]]; p.replaceWith(d); }
-      else if (t==="@@CODE@@"){ const s=doc.createElement("p"); s.className="code-note"; s.textContent=tr("codeNote"); p.replaceWith(s); }
-    });
-    doc.querySelectorAll("h2").forEach((h,i)=>h.id="sec-"+i);
-    return doc.body.innerHTML;
-  }
-  function paintMermaid(el){
-    if (!window.mermaid) return;
-    try {
-      mermaid.initialize({startOnLoad:false, theme:mdTheme(), securityLevel:"strict", flowchart:{useMaxWidth:true}});
-      const nodes=[...el.querySelectorAll(".mermaid:not([data-processed])")];
-      nodes.forEach(n=>{ if(!n.id) n.id="mmd"+(_mmid++); });
-      if (nodes.length) mermaid.run({nodes});
-    } catch(e){ console.warn("mermaid", e); }
-  }
 
   function relatedBox(it){
     const rel = items.filter(x => x.id!==it.id && (x.tags[0]===it.tags[0] || (it.group && x.group===it.group))).slice(0,8);
@@ -709,22 +659,11 @@ code,.mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:13px}
       </ul></div>
       ${relatedBox(it)}
       <div class="box files"><h4>${tr("files")} (${it.files.length})</h4><ul>${it.files.map(f=>`<li class="mono"><a href="${f.url}" target="_blank" rel="noopener">${ic("file-code")} ${esc(f.path)}</a></li>`).join("")}</ul>
-        <p style="margin:8px 0 0;font-size:12.5px;color:var(--muted)">${tr("openHint")}</p>${it.access==="private"?`<p class="note-lock">${ic("lock")} ${tr("privateNote")}</p>`:""}</div>
-      ${it.toc.length?`<div class="box toc"><h4>${tr("toc")}</h4><ul>${it.toc.map((h,i)=>`<li><a href="#sec-${i}" data-sec="${i}">${esc(h)}</a></li>`).join("")}</ul></div>`:""}
-      <div class="box"><h4>${tr("flow")}</h4>
-        ${multi?`<div class="ftabs" id="ftabs">${it.files.map((f,i)=>`<button aria-pressed="${i===0}" data-f="${i}">${esc(f.path.split("/").pop())}</button>`).join("")}</div>`:""}
-        <div class="md" id="mdView">${renderMd(it.files[0].content)}</div></div>`;
+        <p class="note-lock ${it.access==="private"?"lock":""}">${ic(it.access==="private"?"lock":"github")} ${it.access==="private"?tr("privateNote"):tr("openHint")}</p></div>`;
     paintIcons();
-    paintMermaid($("#mdView"));
     $("#dClose").onclick = close;
     $("#aLink").onclick = () => copy(it.url, tr("okL"));
     const ac=$("#aCmd"); if (ac) ac.onclick = () => copy(it.invoke, tr("okCmd"));
-    const ft=$("#ftabs"); if (ft) ft.onclick = e => { const b=e.target.closest("[data-f]"); if(!b) return;
-      ft.querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",String(x===b)));
-      $("#mdView").innerHTML = renderMd(it.files[+b.dataset.f].content); paintIcons(); paintMermaid($("#mdView")); };
-    $("#dBody").querySelectorAll("[data-sec]").forEach(a=>a.onclick = e => { e.preventDefault();
-      const fb=$("#ftabs"); if (fb && fb.querySelector('[aria-pressed="true"]').dataset.f!=="0") fb.querySelector('[data-f="0"]').click();
-      const el=document.getElementById("sec-"+a.dataset.sec); if (el) el.scrollIntoView({behavior:"smooth",block:"start"}); });
     $("#dBody").querySelectorAll("[data-rel]").forEach(bn=>bn.onclick=()=>open(bn.dataset.rel));
     $("#dBody").scrollTop = 0;
     $("#drawer").classList.add("open"); $("#scrim").classList.add("open");

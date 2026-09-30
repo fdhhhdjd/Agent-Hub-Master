@@ -157,8 +157,8 @@ def make_item(kind, source, slug, main, base, extra=(), invoke="", group=""):
     fm, body = split_frontmatter(text)
     files = [main] + [f for f in extra if f != main]
     tag_seed = slug + " " + disp_path(main, base) + " " + group
-    file_objs = [{"path": disp_path(f, base), "url": BLOB[source] + disp_path(f, base),
-                  "content": f.read_text(encoding="utf-8")} for f in files]
+    words = sum(len(f.read_text(encoding="utf-8").split()) for f in files)
+    file_objs = [{"path": disp_path(f, base), "url": BLOB[source] + disp_path(f, base)} for f in files]
     item_id = f"{source}-{kind}-{slug}".replace("/", "-")
     meta = {}
     fmraw = re.match(r"^---\n(.*?)\n---", text, re.S)
@@ -167,7 +167,6 @@ def make_item(kind, source, slug, main, base, extra=(), invoke="", group=""):
             mm = re.search(rf"^\s*{mk}:\s*\"?([^\"\n]+)", fmraw.group(1), re.M)
             if mm:
                 meta[mk] = mm.group(1).strip().strip('"')
-    words = sum(len(f["content"].split()) for f in file_objs)
     return {
         "id": item_id,
         "type": kind,
@@ -184,7 +183,7 @@ def make_item(kind, source, slug, main, base, extra=(), invoke="", group=""):
         "repo": REPO[source],
         "access": ACCESS[source],
         "meta": meta,
-        "toc": headings(body),
+        "toc": [],
         "files": file_objs,
         "words": words,
         "readmin": max(1, round(words / 200)),
