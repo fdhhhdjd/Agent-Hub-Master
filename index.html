@@ -677,18 +677,19 @@ code,.mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:13px}
   $("#q").oninput = e => { state.q=e.target.value.trim().toLowerCase(); e.target.classList.toggle("on", !!state.q); render(); paintIcons(); };
 
   function filtered(){
+    // Có từ khoá -> tìm TOÀN BỘ (bỏ qua bộ/loại/chủ đề/access)
+    if (state.q) return items.filter(i => (i.title+" "+descOf(i)).toLowerCase().includes(state.q));
     return scoped().filter(i =>
       (state.type==="all" || i.type===state.type) &&
       (state.access==="all" || i.access===state.access) &&
-      (!state.tag || i.tags.includes(state.tag)) &&
-      (!state.q || (i.title+" "+descOf(i)).toLowerCase().includes(state.q)));
+      (!state.tag || i.tags.includes(state.tag)));
   }
 
   function render(){
     document.querySelectorAll(".pill").forEach(b=>b.setAttribute("aria-pressed", String(b.dataset.coll===state.coll)));
     document.querySelectorAll(".tab").forEach(b=>b.setAttribute("aria-selected", String(b.dataset.type===state.type)));
     const list = filtered();
-    $("#count").textContent = `${list.length} ${tr("items")}` + (state.type!=="all" ? ` · ${typeLabel(state.type)}` : "");
+    $("#count").textContent = state.q ? `${list.length} ${tr("items")} · ${lang==="vi"?"tìm toàn bộ":"all sets"}` : `${list.length} ${tr("items")}` + (state.type!=="all" ? ` · ${typeLabel(state.type)}` : "");
     $("#ghAll").href = repoOf(state.coll);
     const ds = $("#ghScope"), span = ds.querySelector("span");
     if (state.coll !== "all") { ds.style.display=""; ds.href=repoOf(state.coll); span.textContent=`${tr("openRepo")}: ${COLL[state.coll][lang]}`; }

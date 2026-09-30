@@ -187,15 +187,15 @@ def _mnode(t):
     t = re.sub(r"[\U0001F000-\U0001FAFF\u2600-\u27BF\u2190-\u21FF\u2B00-\u2BFF\u2B50\u2705\u274C\u2b06-\u2b07]", "", t)
     t = t.replace(chr(34), "").replace("`", "").replace("#", "").replace("[", "(").replace("]", ")").replace("|", "/")
     t = re.sub(r"\s+", " ", t).strip(" -–—·:")
-    return (t[:42] + "…") if len(t) > 42 else t
+    return (t[:54] + "…") if len(t) > 54 else t
 
 
 def outline_flow(toc):
     """Tự sinh sơ đồ luồng TỔNG QUAN từ tên các phần (không thêm chi tiết mới)."""
     heads = [h for h in (_mnode(x) for x in toc) if h]
-    if len(heads) < 3:
+    if len(heads) < 2:
         return None
-    heads = heads[:7]
+    heads = heads[:12]
     out = ["flowchart TD"]
     for i, h in enumerate(heads):
         out.append("  n%d[\"%d· %s\"]" % (i, i + 1, h))
@@ -210,9 +210,15 @@ def make_item(kind, source, slug, main, base, extra=(), invoke="", group=""):
     fm, body = split_frontmatter(text)
     files = [main] + [f for f in extra if f != main]
     tag_seed = slug + " " + disp_path(main, base) + " " + group
-    words = sum(len(f.read_text(encoding="utf-8").split()) for f in files)
-    _toc = headings(body)[:22]
-    _flows = extract_flows(text)
+    file_texts = [f.read_text(encoding="utf-8") for f in files]
+    words = sum(len(t.split()) for t in file_texts)
+    combined = ("\n\n").join(file_texts)
+    _toc = []
+    for _t in file_texts:
+        _, _b = split_frontmatter(_t)
+        _toc += headings(_b)
+    _toc = _toc[:22]
+    _flows = extract_flows(combined)
     if not _flows:
         _of = outline_flow(_toc)
         if _of:
