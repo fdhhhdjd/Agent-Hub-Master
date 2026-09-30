@@ -552,14 +552,51 @@ code,.mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:13px}
   const typeLabel = t => TYPES[t][lang];
   const groupLabel = g => (GROUPS[g]||{vi:g,en:g})[lang];
   const iconFor = it => ic(it.type==="start" ? "rocket" : tagIcon(it.tags[0]));
+  // bỏ dấu tiếng Việt để tìm không phân biệt dấu
+  const fold = s => (s||"").normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/đ/g,"d").replace(/Đ/g,"d").toLowerCase();
+  const reEsc = s => s.replace(/[.*+?^${}()|[\]\\]/g,"\\$&");
   function hl(text){
     const t = esc(text);
-    const q = state.q.trim();
+    const q = (state.q||"").trim();
     if (!q) return t;
-    try { return t.replace(new RegExp("("+q.replace(/[.*+?^${}()|[\]\\]/g,"\\$&")+")","gi"), "<mark class=\"hl\">$1</mark>"); }
-    catch { return t; }
+    const terms = q.split(/\s+/).filter(Boolean).map(reEsc);
+    if (!terms.length) return t;
+    // chỉ tô từ BẮT ĐẦU bằng từ khoá (đầu từ), không tô giữa từ như "sto[rag]e"
+    try {
+      const re = new RegExp("(^|[^A-Za-z0-9À-ỹ])((?:"+terms.join("|")+")[A-Za-zÀ-ỹ0-9]*)","gi");
+      return t.replace(re, (m,b,w)=> b+"<mark class=\"hl\">"+w+"</mark>");
+    } catch { return t; }
   }
   const descOf = it => (it.simple && it.simple[lang]) || it.desc;
+  // kho tìm kiếm: title + mô tả + slug + lệnh + tags + mục lục + nhóm + loại (đã bỏ dấu)
+  function hay(it){
+    if (it._hayLang !== lang){
+      const parts = [it.title, descOf(it), it.slug, it.invoke, it.motto,
+        (it.tags||[]).map(tagLabel).join(" "), (it.toc||[]).join(" "),
+        groupLabel(it.group||""), typeLabel(it.type)];
+      it._hay = fold(parts.filter(Boolean).join("  "));
+      it._hayTitle = fold(it.title||"");
+      it._hayLang = lang;
+    }
+    return it;
+  }
+  // điểm liên quan: khớp đầu-từ; tất cả từ khoá phải khớp (AND); ưu tiên tiêu đề
+  function searchScore(it){
+    const terms = (state.qFold||"").split(/\s+/).filter(Boolean);
+    if (!terms.length) return 0;
+    hay(it);
+    let score = 0;
+    for (const raw of terms){
+      const t = reEsc(raw);
+      const wb = new RegExp("(?:^|[^a-z0-9])"+t);                 // đầu một từ bất kỳ
+      if (!wb.test(it._hay)) return -1;                          // thiếu 1 từ -> loại
+      if (new RegExp("(?:^|[^a-z0-9])"+t+"(?:$|[^a-z0-9])").test(it._hayTitle)) score += 100; // trùng nguyên từ ở tiêu đề
+      else if (wb.test(it._hayTitle)) score += 60;              // đầu từ trong tiêu đề
+      else score += 20;                                         // khớp ở nơi khác
+      if (fold(it.slug||"") === raw || fold(it.invoke||"").replace(/^\//,"") === raw) score += 40; // trùng slug/lệnh
+    }
+    return score;
+  }
 
   try { const th = localStorage.getItem("hub.theme"); if (th) document.documentElement.dataset.theme = th; } catch {}
   $("#themeBtn").onclick = () => {
@@ -674,11 +711,16 @@ code,.mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:13px}
   $("#accSeg").onclick = e => { const b=e.target.closest("[data-acc]"); if(!b) return; state.access=b.dataset.acc;
     document.querySelectorAll("#accSeg button").forEach(x=>x.setAttribute("aria-pressed",String(x.dataset.acc===state.access))); render(); paintIcons(); };
   $("#tagSel").onchange = e => { state.tag=e.target.value; render(); paintIcons(); };
-  $("#q").oninput = e => { state.q=e.target.value.trim().toLowerCase(); e.target.classList.toggle("on", !!state.q); render(); paintIcons(); };
+  $("#q").oninput = e => { state.q=e.target.value.trim().toLowerCase(); state.qFold=fold(state.q); e.target.classList.toggle("on", !!state.q); render(); paintIcons(); };
 
   function filtered(){
-    // Có từ khoá -> tìm TOÀN BỘ (bỏ qua bộ/loại/chủ đề/access)
-    if (state.q) return items.filter(i => (i.title+" "+descOf(i)).toLowerCase().includes(state.q));
+    // Có từ khoá -> tìm TOÀN BỘ (bỏ qua bộ/loại/chủ đề/access), khớp đầu-từ + xếp hạng
+    if (state.q){
+      const scored = [];
+      for (const i of items){ const s = searchScore(i); if (s >= 0) scored.push([s,i]); }
+      scored.sort((a,b)=> b[0]-a[0]);
+      return scored.map(x=>x[1]);
+    }
     return scoped().filter(i =>
       (state.type==="all" || i.type===state.type) &&
       (state.access==="all" || i.access===state.access) &&
