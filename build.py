@@ -152,22 +152,36 @@ def tags_for(key):
     return tags or ["other"]
 
 
-_DIAG = set("─│┌└├┐┘┼►▼▲◄→←↓↑╱╲╭╮╯╰═╔╗╚╝")
+_BOX = set("─│┌┐└┘├┤┬┴┼╔╗╚╝═║╠╣╦╩╬╭╮╯╰")
 def extract_flows(text):
-    """Chỉ lấy SƠ ĐỒ (mermaid + ascii có nét vẽ) — bỏ chữ/code chi tiết."""
+    """Chỉ lấy SƠ ĐỒ KHỐI (mermaid + ascii có khung vẽ) — KHÔNG lấy prose/step/code."""
     flows = []
-    def _m(m):
-        flows.append({"type": "mermaid", "code": m.group(1).strip()})
-        return ""
-    rest = re.sub(r"```mermaid[ \t]*\n(.*?)```", _m, text, flags=re.S)
-    for m in re.finditer(r"```[^\n]*\n(.*?)```", rest, re.S):
-        body = m.group(1).rstrip()
-        if any(c in body for c in _DIAG):            # phải có nét vẽ sơ đồ
-            lines = body.split("\n")
-            if len(lines) > 40:                        # cắt bớt sơ đồ quá dài
-                body = "\n".join(lines[:40]) + "\n…"
-            flows.append({"type": "ascii", "code": body})
-    return flows[:3]                                   # tối đa 3 sơ đồ / mục
+    src = text.split(chr(10))
+    i = 0
+    while i < len(src):
+        ln = src[i].strip()
+        if ln.startswith("```"):
+            lang = ln[3:].strip().lower()
+            j = i + 1
+            block = []
+            while j < len(src) and not src[j].strip().startswith("```"):
+                block.append(src[j]); j += 1
+            if lang == "mermaid":
+                flows.append({"type": "mermaid", "code": chr(10).join(block).strip()})
+            else:
+                boxlines = sum(1 for b in block if any(c in b for c in _BOX))
+                if boxlines >= 3:
+                    keep = block[:26]
+                    code = chr(10).join(keep).rstrip()
+                    if len(block) > 26:
+                        code += chr(10) + "…"
+                    flows.append({"type": "ascii", "code": code})
+            i = j + 1
+        else:
+            i += 1
+    flows.sort(key=lambda f: 0 if f["type"] == "mermaid" else 1)
+    return flows[:2]
+
 
 
 def make_item(kind, source, slug, main, base, extra=(), invoke="", group=""):
@@ -200,7 +214,6 @@ def make_item(kind, source, slug, main, base, extra=(), invoke="", group=""):
         "url": file_objs[0]["url"],
         "repo": REPO[source],
         "access": ACCESS[source],
-        "meta": meta,
         "toc": [],
         "flows": extract_flows(text),
         "files": file_objs,

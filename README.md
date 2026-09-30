@@ -33,6 +33,10 @@ nhãn, đường dẫn + link GitHub. Toàn bộ playbook/nội dung thật nằ
 được phần giới thiệu, không lấy được nội dung để dựng lại. MCP Starter Kit là Public nên nội
 dung của nó vốn đã công khai trên GitHub.
 
+Chỉ **sơ đồ khối tổng quan** (Mermaid + ASCII có khung vẽ, tối đa 2/mục) được nhúng làm
+teaser — KHÔNG nhúng prose/step/code/metadata tác giả gốc. `build.py::extract_flows` chỉ giữ
+khối có ≥3 dòng nét vẽ (loại bỏ các đoạn liệt kê từng bước).
+
 ## Cấu trúc
 | File | Vai trò |
 |---|---|
