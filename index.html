@@ -109,14 +109,66 @@ input[type=search].on{border-color:var(--accent);box-shadow:0 0 0 3px var(--acce
 .btn:focus-visible,.card:focus-visible,.tab:focus-visible,.pill:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 
 /* guide */
-.guide{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(178px,100%),1fr));gap:10px;margin-bottom:20px}
+.guide,.sdlc-flow{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:12px}
+@media (max-width:1180px){ .guide,.sdlc-flow{grid-template-columns:repeat(3,minmax(0,1fr))} }
+@media (max-width:760px){ .guide,.sdlc-flow{grid-template-columns:repeat(2,minmax(0,1fr))} }
+@media (max-width:460px){ .guide,.sdlc-flow{grid-template-columns:1fr} }
+.guide{margin-bottom:22px}
 .guide.hidden{display:none}
-.g{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:12px 14px;display:flex;gap:10px;align-items:flex-start}
-.g .ic{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;flex:none}
-.g .ic .i{width:18px;height:18px}
-.g b{display:block;font-size:13.5px;line-height:1.3}
-.g span{font-size:12px;color:var(--muted);display:block;margin-top:2px}
+.g{position:relative;min-inline-size:0;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px;display:flex;gap:11px;align-items:flex-start;
+  opacity:0;transform:translateY(16px);transition:opacity .55s cubic-bezier(.22,1,.36,1),transform .55s cubic-bezier(.22,1,.36,1),border-color .16s,box-shadow .16s;transition-delay:calc(var(--i)*55ms)}
+.guide.in .g{opacity:1;transform:none}
+.g:hover{border-color:color-mix(in srgb,var(--accent) 35%,var(--line));box-shadow:var(--shadow)}
+.g .ic{width:36px;height:36px;border-radius:11px;display:grid;place-items:center;flex:none}
+.g .ic .i{width:19px;height:19px}
+.g-tx{min-inline-size:0}
+.g b{display:block;font-size:13.5px;line-height:1.32;min-height:2.64em}
+.g span{font-size:12px;color:var(--muted);display:block;margin-top:3px}
 
+/* SDLC section */
+.sdlc{margin:8px 0 28px}
+.sdlc-head{margin-bottom:14px}
+.sdlc-head h2{margin:0 0 3px;font-size:clamp(17px,1.2vw+14px,20px);font-weight:800;display:flex;align-items:center;gap:9px;letter-spacing:-.01em}
+.sdlc-head h2 .ttl{background:linear-gradient(100deg,var(--accent),#e11d48,#7c3aed,var(--accent));background-size:280% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:shine 6s linear infinite}
+.sdlc-head h2 .i{width:20px;height:20px;color:var(--accent);flex:none}
+.sdlc-head p{margin:0;font-size:13px;color:var(--muted)}
+.stage{position:relative;min-inline-size:0;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:13px;display:flex;flex-direction:column;gap:6px;text-align:left;cursor:pointer;
+  opacity:0;transform:translateY(24px) scale(.95);transition:opacity .5s ease,transform .55s cubic-bezier(.34,1.56,.64,1),border-color .16s,box-shadow .16s;transition-delay:calc(var(--i)*90ms)}
+.sdlc.in .stage{opacity:1;transform:none}
+.stage:hover{border-color:color-mix(in srgb,var(--accent) 45%,var(--line));box-shadow:var(--shadow);transform:translateY(-4px)}
+.stage.hl{border-color:color-mix(in srgb,var(--accent) 55%,var(--line));background:color-mix(in srgb,var(--accent) 6%,var(--panel))}
+.sdlc.in .stage.hl{animation:glow 2.8s ease-in-out 1s infinite}
+@keyframes glow{0%,100%{box-shadow:0 0 0 0 transparent}50%{box-shadow:0 0 0 5px color-mix(in srgb,var(--accent) 13%,transparent)}}
+.st-top{display:flex;align-items:center;gap:7px;font-size:15px;min-inline-size:0}
+.st-top b{font-weight:700}
+.st-ic{position:relative;width:28px;height:28px;border-radius:9px;display:grid;place-items:center;background:color-mix(in srgb,var(--accent) 12%,transparent);color:var(--accent);flex:none}
+.st-ic .i{width:16px;height:16px}
+.sdlc.in .st-ic::after{content:"";position:absolute;inset:0;border-radius:9px;box-shadow:0 0 0 0 color-mix(in srgb,var(--accent) 45%,transparent);animation:ripple 3.4s ease-out infinite;animation-delay:calc(1.4s + var(--i)*.42s)}
+@keyframes ripple{0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--accent) 40%,transparent)}70%,100%{box-shadow:0 0 0 9px transparent}}
+.st-no{width:20px;height:20px;border-radius:50%;border:1.5px solid var(--accent);color:var(--accent);font-size:11px;font-weight:700;display:grid;place-items:center;flex:none}
+.st-vi{font-size:13px;font-weight:600;color:var(--ink);min-height:1.4em}
+.st-art{align-self:flex-start;max-inline-size:100%;overflow-wrap:anywhere;font-family:"JetBrains Mono",monospace;font-size:11px;color:var(--muted);background:var(--code-bg);border-radius:6px;padding:2px 7px}
+.st-desc{font-size:11.5px;color:var(--muted);line-height:1.45}
+.st-arrow{position:absolute;right:-13px;top:50%;transform:translateY(-50%) scale(.5);z-index:3;color:var(--faint);opacity:0;transition:opacity .35s,transform .35s;transition-delay:calc(var(--i)*90ms + 300ms);pointer-events:none}
+.st-arrow .i{width:22px;height:22px;background:var(--bg);border-radius:50%;padding:1px}
+.sdlc.in .st-arrow{opacity:1;transform:translateY(-50%) scale(1)}
+@media (max-width:1180px){ .st-arrow{display:none} }
+.sdlc-loop{position:relative;height:40px;margin:16px 0 14px}
+.loop-track{position:absolute;inset:0;border:2px dashed color-mix(in srgb,var(--accent) 55%,transparent);border-top:0;border-radius:0 0 16px 16px;opacity:0;transform:translateY(-6px);transition:opacity .55s ease .45s,transform .55s ease .45s}
+.sdlc.in .loop-track{opacity:1;transform:none}
+.loop-arrow{position:absolute;left:-8px;top:-11px;color:var(--accent);opacity:0;transition:opacity .35s 1s,transform .35s 1s;transform:translateY(4px)}
+.loop-arrow .i{width:18px;height:18px}
+.sdlc.in .loop-arrow{opacity:1;transform:none}
+.loop-label{position:absolute;left:50%;bottom:-10px;transform:translateX(-50%);background:var(--bg);padding:0 14px;font-size:12px;color:var(--accent);display:inline-flex;align-items:center;gap:6px;white-space:nowrap;max-inline-size:calc(100% - 30px);opacity:0;transition:opacity .4s .85s}
+.loop-label .i{width:13px;height:13px;flex:none}
+.sdlc.in .loop-label{opacity:1}
+.sdlc-legend{display:flex;gap:14px 22px;flex-wrap:wrap;font-size:11.5px;color:var(--muted)}
+.sdlc-legend span{display:inline-flex;align-items:center;gap:7px}
+.lg-a,.lg-b,.lg-c{width:22px;height:0;border-top:2px solid var(--faint);flex:none}
+.lg-b{border-top-color:var(--accent)}
+.lg-c{width:13px;height:13px;border:1.5px solid var(--accent);border-radius:4px;background:color-mix(in srgb,var(--accent) 8%,transparent)}
+@media (max-width:760px){ .sdlc-loop{display:none} .loop-label{white-space:normal} }
+@media (prefers-reduced-motion:reduce){ .g,.stage,.st-arrow,.loop-line,.loop-arrow,.loop-label{opacity:1 !important;transform:none !important} .sdlc.in .stage.hl,.sdlc.in .st-ic::after,.sdlc-head h2 .ttl{animation:none !important} }
 /* toolbar */
 .toolbar{position:sticky;top:0;z-index:5;background:var(--bg);padding:10px 0 12px;margin-bottom:6px;display:flex;flex-direction:column;gap:10px}
 .pills{display:flex;gap:6px;flex-wrap:wrap}
@@ -240,6 +292,7 @@ code,.mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:13px}
   </header>
 
   <section class="guide" id="guide" aria-label="Giới thiệu"></section>
+  <section class="sdlc" id="sdlc" aria-label="Quy trình phát triển phần mềm"></section>
 
   <div class="toolbar">
     <div class="pills" id="colls" role="group" aria-label="Bộ"></div>
@@ -321,6 +374,12 @@ code,.mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:13px}
     access:  {vi:"Truy cập", en:"Access"},
     accAll:  {vi:"Tất cả", en:"All"},
     privateNote:{vi:"Repo riêng tư — chỉ lớp / người có quyền mới mở được link GitHub.", en:"Private repo — only the class / authorized users can open the GitHub links."},
+    sdlcTitle:{vi:"Quy trình phát triển phần mềm chuẩn", en:"Standard software development process"},
+    sdlcSub:{vi:"Vòng lặp SDLC AI-native · 6 giai đoạn — mỗi giai đoạn ứng với một agent trong bộ (bấm để xem).", en:"AI-native SDLC loop · 6 stages — each maps to an agent (click to view)."},
+    sdlcLoop:{vi:"Sự cố → intent.md mới → khởi động lại vòng lặp", en:"Incident → new intent.md → restart the loop"},
+    sdlcLeg1:{vi:"bàn giao artifact cho giai đoạn kế", en:"hand the artifact to the next stage"},
+    sdlcLeg2:{vi:"vòng lặp phản hồi — Maintain quay lại Plan", en:"feedback loop — Maintain returns to Plan"},
+    sdlcLeg3:{vi:"giai đoạn tự chạy, không cần người", en:"stage runs itself, no human in the loop"},
     codeNote:{vi:"— đoạn code, xem đầy đủ trên GitHub —", en:"— code block, see full source on GitHub —"},
     copyCmd: {vi:"Copy lệnh", en:"Copy command"},
     okOpen:  {vi:"Đang mở GitHub…", en:"Opening GitHub…"},    okL:     {vi:"Đã copy link", en:"Link copied"},
@@ -364,6 +423,14 @@ code,.mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:13px}
     public:  {vi:"Công khai", en:"Public",  icon:"globe", cls:"acc-public"},
     private: {vi:"Nội bộ lớp", en:"Class-only", icon:"lock",  cls:"acc-private"},
   };
+  const STAGES = [
+    {n:1,en:"Plan",vi:"Lập kế hoạch",ic:"clipboard-list",art:"intent.md",agent:"master-agent-project-manager",dvi:"Tổng hợp vấn đề từ nguồn thật, viết proto-spec.",den:"Gather real pain points, write a proto-spec."},
+    {n:2,en:"Design",vi:"Thiết kế",ic:"pen-tool",art:"spec.md",agent:"master-agent-ui-ux-designer",dvi:"Gộp yêu cầu + thiết kế vào một bản spec.",den:"Merge requirements + design into one spec."},
+    {n:3,en:"Build",vi:"Xây dựng",ic:"code-xml",art:"plan.md · code",agent:"master-agent-software-engineer",dvi:"Viết plan rồi mới code; duyệt trước khi làm.",den:"Plan first, then code; approve before building."},
+    {n:4,en:"Test",vi:"Kiểm thử",ic:"flask-conical",art:"evals · CI",agent:"master-agent-qa-test-engineer",dvi:"Kiểm thử + eval liên tục trong CI, tự sửa lỗi.",den:"Continuous tests + evals in CI, self-fix."},
+    {n:5,en:"Deploy",vi:"Triển khai",ic:"rocket",art:"PR review",agent:"master-agent-devops-engineer",dvi:"Deploy theo tag, review nhiều lớp, có rollback.",den:"Deploy by tag, layered review, with rollback."},
+    {n:6,en:"Maintain",vi:"Vận hành",ic:"wrench",art:"→ intent.md",agent:"master-agent-sre-ops-engineer",dvi:"Giám sát; sự cố tự sinh intent.md mới.",den:"Monitor; an incident spawns a new intent.md."},
+  ];
   const accWord = a => a==="public" ? "Public" : "Private";
   const accTip  = a => ACC[a][lang];
   let lang = (() => { try { return localStorage.getItem("hub.lang") || "vi"; } catch { return "vi"; } })();
@@ -412,13 +479,36 @@ code,.mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:13px}
     $("#ghAll").href = repoOf(state.coll);
     document.querySelectorAll("[data-t]").forEach(el => el.textContent = tr(el.dataset.t));
     $("#q").placeholder = tr("search");
-    buildGuide(); buildColls(); buildTabs(); buildAcc(); buildTags(); render(); paintIcons();
+    buildGuide(); buildSdlc(); buildColls(); buildTabs(); buildAcc(); buildTags(); render(); paintIcons();
   }
 
+  function buildSdlc(){
+    const cards = STAGES.map((st,idx)=>{
+      const arrow = idx < STAGES.length-1 ? `<span class="st-arrow" aria-hidden="true">${ic("chevron-right")}</span>` : "";
+      return `<button class="stage${st.n===6?" hl":""}" style="--i:${idx}" data-agent="${st.agent}" title="${st.vi}">
+        <span class="st-top"><span class="st-ic">${ic(st.ic)}</span><span class="st-no">${st.n}</span><b>${st.en}</b></span>
+        <span class="st-vi">${st.vi}</span>
+        <span class="st-art">${esc(st.art)}</span>
+        <span class="st-desc">${lang==="vi"?st.dvi:st.den}</span>${arrow}</button>`;
+    }).join("");
+    $("#sdlc").innerHTML = `
+      <div class="sdlc-head"><h2>${ic("git-branch-plus")} <span class="ttl">${tr("sdlcTitle")}</span></h2><p>${tr("sdlcSub")}</p></div>
+      <div class="sdlc-flow">${cards}</div>
+      <div class="sdlc-loop"><span class="loop-track"></span><span class="loop-arrow">${ic("arrow-up")}</span><span class="loop-label">${ic("refresh-cw")} ${tr("sdlcLoop")}</span></div>
+      <div class="sdlc-legend">
+        <span><span class="lg-a"></span> ${tr("sdlcLeg1")}</span>
+        <span><span class="lg-b"></span> ${tr("sdlcLeg2")}</span>
+        <span><span class="lg-c"></span> ${tr("sdlcLeg3")}</span>
+      </div>`;
+    $("#sdlc").querySelectorAll("[data-agent]").forEach(b=>b.onclick=()=>open(b.dataset.agent));
+    if (sdlcSeen) $("#sdlc").classList.add("in");
+  }
+  let sdlcSeen=false;
   function buildGuide(){
-    $("#guide").innerHTML = Object.entries(TYPES).filter(([k])=>k!=="all").map(([k,t]) =>
-      `<div class="g"><div class="ic" style="background:color-mix(in srgb,${t.color} 15%,transparent);color:${t.color}">${ic(t.icon)}</div>
-       <div><b>${t[lang]} · ${t["w"+lang[0]]}</b><span>${t["h"+lang[0]]}</span></div></div>`).join("");
+    $("#guide").innerHTML = Object.entries(TYPES).filter(([k])=>k!=="all").map(([k,t],idx) =>
+      `<div class="g" style="--i:${idx}"><div class="ic" style="background:color-mix(in srgb,${t.color} 15%,transparent);color:${t.color}">${ic(t.icon)}</div>
+       <div class="g-tx"><b>${t[lang]} · ${t["w"+lang[0]]}</b><span>${t["h"+lang[0]]}</span></div></div>`).join("");
+    requestAnimationFrame(()=>$("#guide").classList.add("in"));
   }
   function buildColls(){
     const c = items.reduce((a,i)=>(a[i.source]=(a[i.source]||0)+1,a),{});
@@ -661,6 +751,8 @@ code,.mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:13px}
   const io = new IntersectionObserver(es => { if (es.some(e=>e.isIntersecting) && shown < curList.length) appendBatch(); },
     { root:null, rootMargin:"600px 0px", threshold:0 });
   io.observe($("#sentinel"));
+  const sdlcIo = new IntersectionObserver(es=>{ if(es.some(e=>e.isIntersecting)){ sdlcSeen=true; $("#sdlc").classList.add("in"); sdlcIo.disconnect(); } }, {threshold:0.15});
+  sdlcIo.observe($("#sdlc"));
 
   document.documentElement.lang = lang;
   applyLang();
