@@ -571,8 +571,9 @@ code,.mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:13px}
   // kho tìm kiếm: title + mô tả + slug + lệnh + tags + mục lục + nhóm + loại (đã bỏ dấu)
   function hay(it){
     if (it._hayLang !== lang){
+      // KHÔNG đưa mục lục (toc) vào tìm kiếm -> tránh nhiễu: 1 heading lạ làm match sai
       const parts = [it.title, descOf(it), it.slug, it.invoke, it.motto,
-        (it.tags||[]).map(tagLabel).join(" "), (it.toc||[]).join(" "),
+        (it.tags||[]).map(tagLabel).join(" "),
         groupLabel(it.group||""), typeLabel(it.type)];
       it._hay = fold(parts.filter(Boolean).join("  "));
       it._hayTitle = fold(it.title||"");
