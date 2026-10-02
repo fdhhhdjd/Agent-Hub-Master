@@ -314,5 +314,13 @@
   "master-command-business-flow": {
     "vi": "Gõ /business-flow để biến yêu cầu bằng lời của người không rành kỹ thuật thành bản mô tả quy trình nghiệp vụ chuẩn (tiếng Việt) cho dev, tester và AI làm theo.",
     "en": "Type /business-flow to turn a non-technical person's plain request into a standard business-process spec that devs, testers and AIs can follow."
+  },
+  "master-rule-mau-prompt-roadmap": {
+    "vi": "3 prompt mẫu để Claude tự dựng roadmap.md + changelog cho dự án (có mã M/N, ký hiệu, link nhảy mục). Đây là PROMPT khởi tạo; đi cặp với rule roadmap-sync giữ roadmap luôn đúng.",
+    "en": "3 ready prompts that make Claude build a project roadmap.md + changelog (M/N codes, status icons, jump links). The INIT prompt; pairs with the roadmap-sync rule that keeps it current."
+  },
+  "master-rule-roadmap-sync": {
+    "vi": "Luật bắt buộc: hễ code xong tính năng (đã chạy thử) hoặc thêm ý tưởng mới thì Claude tự cập nhật roadmap.md + changelog ngay trong lượt. Đây là KHUÔN đồng bộ; dùng chung với prompt mẫu roadmap để khởi tạo.",
+    "en": "Mandatory rule: whenever a feature is done (and verified) or a new idea is added, Claude updates roadmap.md + changelog in the same turn. The SYNC framework; used with the roadmap prompt template that creates it."
   }
 }
