@@ -16,9 +16,10 @@ from datetime import date
 from pathlib import Path
 
 HUB = Path(__file__).resolve().parent
-ROOT = HUB.parent                      # AI-Agent-Master
+# agent-hub is now a standalone sibling; point explicitly at the 3 source repos.
+ROOT = HUB.parent / "AI-Agent-Master"      # AI-Agent-Master (sibling)
 DL = HUB / "downloads"
-SECOPS = ROOT.parent / "AI-Agent-Devops"   # clone của AI-Agent-Security-DevOps (sibling)
+SECOPS = HUB.parent / "AI-Agent-Devops"    # clone của AI-Agent-Security-DevOps (sibling)
 MCP = Path.home() / "Documents" / "LMS" / "mcp-starter-kit"   # clone của MCP-STARTER-KIT
 
 # Link GitHub thay cho tải file
