@@ -705,14 +705,16 @@ code,.mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:13px}
       order.map(k=>`<option value="${k}"${state.tag===k?" selected":""}>${esc(tagLabel(k))}</option>`).join("");
   }
 
-  $("#colls").onclick = e => { const b=e.target.closest("[data-coll]"); if(!b) return;
-    state.coll=b.dataset.coll; state.type="all"; state.tag=""; state.access="all"; buildColls(); buildTabs(); buildAcc(); buildTags(); render(); paintIcons(); };
-  $("#tabs").onclick = e => { const b=e.target.closest(".tab"); if(!b) return; state.type=b.dataset.type; render(); paintIcons(); };
-  $("#filtBtn").onclick = () => { const mf=$("#moreFilters"); const open=mf.classList.toggle("open"); $("#filtBtn").setAttribute("aria-expanded",String(open)); };
-  $("#accSeg").onclick = e => { const b=e.target.closest("[data-acc]"); if(!b) return; state.access=b.dataset.acc;
-    document.querySelectorAll("#accSeg button").forEach(x=>x.setAttribute("aria-pressed",String(x.dataset.acc===state.access))); render(); paintIcons(); };
-  $("#tagSel").onchange = e => { state.tag=e.target.value; render(); paintIcons(); };
   let qTimer = null;
+  // bấm bất kỳ bộ lọc nào -> thoát chế độ tìm, trả về duyệt theo lọc (tránh "nhảy linh tinh")
+  function clearSearch(){ clearTimeout(qTimer); state.q=""; state.qFold=""; const q=$("#q"); if(q){ q.value=""; q.classList.remove("on"); } }
+  $("#colls").onclick = e => { const b=e.target.closest("[data-coll]"); if(!b) return;
+    clearSearch(); state.coll=b.dataset.coll; state.type="all"; state.tag=""; state.access="all"; buildColls(); buildTabs(); buildAcc(); buildTags(); render(); paintIcons(); };
+  $("#tabs").onclick = e => { const b=e.target.closest(".tab"); if(!b) return; clearSearch(); state.type=b.dataset.type; render(); paintIcons(); };
+  $("#filtBtn").onclick = () => { const mf=$("#moreFilters"); const open=mf.classList.toggle("open"); $("#filtBtn").setAttribute("aria-expanded",String(open)); };
+  $("#accSeg").onclick = e => { const b=e.target.closest("[data-acc]"); if(!b) return; clearSearch(); state.access=b.dataset.acc;
+    document.querySelectorAll("#accSeg button").forEach(x=>x.setAttribute("aria-pressed",String(x.dataset.acc===state.access))); render(); paintIcons(); };
+  $("#tagSel").onchange = e => { clearSearch(); state.tag=e.target.value; render(); paintIcons(); };
   function runSearch(v){ state.q=v; state.qFold=fold(v); render(); paintIcons(); }
   $("#q").oninput = e => {
     const v = e.target.value.trim().toLowerCase();
