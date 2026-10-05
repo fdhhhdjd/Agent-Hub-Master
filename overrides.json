@@ -322,5 +322,9 @@
   "master-rule-roadmap-sync": {
     "vi": "Luật bắt buộc: hễ code xong tính năng (đã chạy thử) hoặc thêm ý tưởng mới thì Claude tự cập nhật roadmap.md + changelog ngay trong lượt. Đây là KHUÔN đồng bộ; dùng chung với prompt mẫu roadmap để khởi tạo.",
     "en": "Mandatory rule: whenever a feature is done (and verified) or a new idea is added, Claude updates roadmap.md + changelog in the same turn. The SYNC framework; used with the roadmap prompt template that creates it."
+  },
+  "master-skill-e2e-testing": {
+    "vi": "Viết và chạy test end-to-end bằng AI cho web và mobile với framework e2e (TesterArmy): mô tả mục tiêu bằng lời để agent tự thao tác app, rồi chốt kết quả bằng assertion chính xác. Có replay cache để chạy lại không tốn tiền model, đăng nhập an toàn bằng secrets, CI GitHub Actions, săn bug (explore, bug bash) và chuyển từ Playwright.",
+    "en": "Write and run AI-driven end-to-end tests for web and mobile with the e2e framework (TesterArmy): describe a goal in plain language, let an agent drive the app, then pin the result with exact assertions. Covers the replay cache (re-runs with no model cost), safe sign-in via secrets, GitHub Actions CI, bug hunting (explore, bug bash) and migrating from Playwright."
   }
 }
