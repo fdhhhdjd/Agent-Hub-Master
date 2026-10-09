@@ -326,5 +326,13 @@
   "master-skill-e2e-testing": {
     "vi": "Viết và chạy test end-to-end bằng AI cho web và mobile với framework e2e (TesterArmy): mô tả mục tiêu bằng lời để agent tự thao tác app, rồi chốt kết quả bằng assertion chính xác. Có replay cache để chạy lại không tốn tiền model, đăng nhập an toàn bằng secrets, CI GitHub Actions, săn bug (explore, bug bash) và chuyển từ Playwright.",
     "en": "Write and run AI-driven end-to-end tests for web and mobile with the e2e framework (TesterArmy): describe a goal in plain language, let an agent drive the app, then pin the result with exact assertions. Covers the replay cache (re-runs with no model cost), safe sign-in via secrets, GitHub Actions CI, bug hunting (explore, bug bash) and migrating from Playwright."
+  },
+  "master-skill-trufflehog": {
+    "vi": "Quét và xử lý API key, token, mật khẩu bị lộ bằng TruffleHog: soát lịch sử git, thư mục, bản build (dist/.next), Docker image, cả org GitHub; tự thử key để biết còn sống hay đã chết. Kèm hook chặn commit (husky), GitHub Actions, detector tự viết cho key nội bộ và quy trình xử lý khi lộ key (thu hồi trước, dọn lịch sử sau). Mọi lệnh đã chạy thử trên v3.99.2.",
+    "en": "Find and handle leaked API keys, tokens and passwords with TruffleHog: scan git history, folders, build output (dist/.next), Docker images and whole GitHub orgs, then test each key to see if it is still live. Includes a commit-blocking hook (husky), GitHub Actions, custom detectors for internal keys, and a leak-response playbook (revoke first, clean history after). Every command tested on v3.99.2."
+  },
+  "master-rule-architecture-sync": {
+    "vi": "Luật bắt buộc: dự án chưa có tài liệu kiến trúc thì chạy /achitecture-plan và để bạn chốt trước khi code. Sau đó hễ code thêm service, module, bảng DB, tích hợp ngoài, endpoint hay biến môi trường thì Claude cập nhật docs/02-ky-thuat/architecture.md (kèm sơ đồ) ngay trong lượt. Đi cặp với roadmap-sync.",
+    "en": "Mandatory rule: if a project has no architecture doc, Claude runs /achitecture-plan and you sign it off before any coding. After that, whenever code adds a service, module, DB table, external integration, endpoint or env var, Claude updates docs/02-ky-thuat/architecture.md (diagram included) in the same turn. Pairs with roadmap-sync."
   }
 }
