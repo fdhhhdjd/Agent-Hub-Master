@@ -334,5 +334,9 @@
   "master-rule-architecture-sync": {
     "vi": "Luật bắt buộc: dự án chưa có tài liệu kiến trúc thì chạy /achitecture-plan và để bạn chốt trước khi code. Sau đó hễ code thêm service, module, bảng DB, tích hợp ngoài, endpoint hay biến môi trường thì Claude cập nhật docs/02-ky-thuat/architecture.md (kèm sơ đồ) ngay trong lượt. Đi cặp với roadmap-sync.",
     "en": "Mandatory rule: if a project has no architecture doc, Claude runs /achitecture-plan and you sign it off before any coding. After that, whenever code adds a service, module, DB table, external integration, endpoint or env var, Claude updates docs/02-ky-thuat/architecture.md (diagram included) in the same turn. Pairs with roadmap-sync."
+  },
+  "master-skill-context-handoff": {
+    "vi": "Bàn giao việc giữa các phiên/agent Claude Code mà không mất ngữ cảnh. Bên giao chốt trạng thái thật (mục tiêu, giới hạn, git, kết quả test, bằng chứng, bước tiếp theo) vào HANDOFF.md; bên nhận đọc, đối chiếu lại với repo rồi mới làm tiếp. Dùng khi sắp hết context, trước /compact hoặc khi chuyển việc sang phiên khác.",
+    "en": "Hand work over between Claude Code sessions or agents without losing context. The sender records the real state (goal, limits, git, test results, evidence, next step) in HANDOFF.md; the receiver reads it and re-checks it against the repo before continuing. Use it when context is running out, before /compact, or when moving work to another session."
   }
 }
