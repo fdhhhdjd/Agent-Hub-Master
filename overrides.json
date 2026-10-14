@@ -338,5 +338,9 @@
   "master-skill-context-handoff": {
     "vi": "Bàn giao việc giữa các phiên/agent Claude Code mà không mất ngữ cảnh. Bên giao chốt trạng thái thật (mục tiêu, giới hạn, git, kết quả test, bằng chứng, bước tiếp theo) vào HANDOFF.md; bên nhận đọc, đối chiếu lại với repo rồi mới làm tiếp. Dùng khi sắp hết context, trước /compact hoặc khi chuyển việc sang phiên khác.",
     "en": "Hand work over between Claude Code sessions or agents without losing context. The sender records the real state (goal, limits, git, test results, evidence, next step) in HANDOFF.md; the receiver reads it and re-checks it against the repo before continuing. Use it when context is running out, before /compact, or when moving work to another session."
+  },
+  "master-skill-git-github-workflow": {
+    "vi": "Luật Git & GitHub cho AI khi vibe coding: việc nào dùng git, việc nào dùng gh hay GitHub MCP, mỗi tính năng một branch, mỗi agent chạy song song một worktree riêng. Rà diff và chặn secret trước khi commit, mở PR, chờ CI xanh rồi mới merge, khôi phục bằng revert thay vì reset, và báo cáo theo mẫu cố định.",
+    "en": "Git & GitHub rules for AI vibe coding: which jobs use git and which use gh or GitHub MCP, one branch per feature and one worktree per parallel agent. Review the diff and block secrets before committing, open a PR, wait for green CI before merging, recover with revert instead of reset, and report in a fixed template."
   }
 }
