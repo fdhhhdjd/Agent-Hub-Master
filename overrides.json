@@ -346,5 +346,49 @@
   "master-skill-qa-testing": {
     "vi": "Kỹ sư QA trọn gói: thiết kế case rồi viết và CHẠY test ở đúng tầng — unit, integration, nghiệp vụ, E2E — kèm các tầng cắt ngang như bảo mật, hiệu năng, độ tin cậy, eval cho AI. Phân loại test đỏ để biết lỗi thật nằm ở đâu, rồi trả kết luận SHIP hay BLOCK kèm bằng chứng. Gộp /unit-tests và e2e-testing (tester-army/e2e, Playwright) vào một chỗ.",
     "en": "A full QA engineer: design cases, then write and RUN tests at the right layer — unit, integration, business, E2E — plus cross-cutting layers like security, performance, reliability and AI eval. Triage red tests to find the real cause, then return a SHIP or BLOCK verdict with evidence. Folds /unit-tests and e2e-testing (tester-army/e2e, Playwright) into one place."
+  },
+  "master-skill-kafka-engineering": {
+    "vi": "Chọn đúng kỹ năng Kafka và phối hợp review pipeline từ producer đến consumer trước production.",
+    "en": "Routes Kafka work to the right skill and coordinates end-to-end pipeline readiness reviews."
+  },
+  "master-skill-kafka-topic-audit": {
+    "vi": "Kiểm tra topic Kafka: replication, min ISR, retention, partition và compaction theo nhu cầu thực tế.",
+    "en": "Audits Kafka topic replication, min ISR, retention, partitions and compaction against workload needs."
+  },
+  "master-skill-kafka-consumer-lag": {
+    "vi": "Tìm nguyên nhân consumer bị chậm từ lịch sử offset, rebalance và lệch tải giữa các partition.",
+    "en": "Diagnoses slow consumers using offset history, rebalances and partition skew."
+  },
+  "master-skill-kafka-perf-review": {
+    "vi": "Review và tối ưu producer/consumer theo thư viện đang dùng, có đo throughput và độ trễ.",
+    "en": "Reviews and tunes producer/consumer performance for the actual client library, throughput and latency goals."
+  },
+  "master-skill-kafka-schema-review": {
+    "vi": "Kiểm tra thay đổi Avro, Protobuf, JSON Schema có làm hỏng consumer cũ hay dữ liệu cần đọc lại không.",
+    "en": "Reviews Avro, Protobuf and JSON Schema changes for compatibility, replay and safe rollout."
+  },
+  "master-skill-kafka-security-audit": {
+    "vi": "Rà soát TLS, SASL, quyền truy cập và secrets của Kafka mà không làm lộ giá trị nhạy cảm.",
+    "en": "Audits Kafka TLS, SASL, access permissions and secrets while redacting sensitive evidence."
+  },
+  "master-skill-kafka-connector-review": {
+    "vi": "Kiểm tra Kafka Connect source/sink: task lỗi, converter, retry, DLQ và cấu hình plugin.",
+    "en": "Reviews Kafka Connect source/sink tasks, converters, retries, DLQs and plugin configuration."
+  },
+  "master-skill-kafka-dlq-review": {
+    "vi": "Kiểm tra record lỗi được lưu an toàn trước khi commit offset, có cảnh báo và cách replay tránh trùng.",
+    "en": "Reviews durable failure routing before offset commits, alerting and deduplicated replay readiness."
+  },
+  "master-skill-kafka-python-client": {
+    "vi": "Tạo hoặc thêm Kafka vào Python/FastAPI với serializer đúng, xử lý delivery, commit và shutdown an toàn.",
+    "en": "Builds Python/FastAPI Kafka clients with correct serializers, delivery handling, commits and graceful shutdown."
+  },
+  "master-skill-kafka-shadowtraffic": {
+    "vi": "Tạo cấu hình ShadowTraffic để sinh dữ liệu Kafka giả đúng schema, có giới hạn tốc độ và số lượng.",
+    "en": "Generates schema-aware ShadowTraffic configurations with bounded event counts and rates."
+  },
+  "master-skill-kafka-shadowtraffic-java": {
+    "vi": "Dựng test Java Kafka bằng Testcontainers và ShadowTraffic, kiểm tra consumer thật trong môi trường riêng.",
+    "en": "Builds isolated Java Kafka tests with Testcontainers, ShadowTraffic and real consumer assertions."
   }
 }
